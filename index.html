@@ -59,6 +59,7 @@
     }
     .login-logo-wrap {
       display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 28px;
+      text-align: center;
     }
     .login-logo-img {
       width: 80px; height: 80px; border-radius: 12px; object-fit: cover;
@@ -382,6 +383,120 @@
       .form-row { grid-template-columns: 1fr; }
     }
 
+    /* ============================================================
+       MOBILE NAV BAR
+    ============================================================ */
+    .mobile-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--bg-panel); border-top: 1px solid var(--border);
+      z-index: 200; height: 56px;
+      padding: 0 4px;
+      justify-content: space-around; align-items: stretch;
+    }
+    .mobile-nav-item {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      flex: 1; gap: 2px; cursor: pointer; color: var(--text-muted);
+      font-size: 10px; font-weight: 600; padding: 6px 2px;
+      border: none; background: none; transition: color .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-nav-item .mn-icon { font-size: 18px; line-height: 1; }
+    .mobile-nav-item.active { color: var(--green); }
+    .mobile-nav-more-panel {
+      display: none; position: fixed; bottom: 56px; left: 0; right: 0;
+      background: var(--bg-panel); border-top: 1px solid var(--border);
+      z-index: 199; padding: 12px 0;
+    }
+    .mobile-nav-more-panel.open { display: block; }
+    .mobile-nav-more-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 20px; cursor: pointer; color: var(--text-secondary);
+      font-size: 14px; font-weight: 500;
+    }
+    .mobile-nav-more-item:hover, .mobile-nav-more-item.active { background: var(--bg-hover); color: var(--green); }
+    .mobile-nav-more-item .mn-icon { font-size: 18px; width: 24px; text-align: center; }
+    .mobile-nav-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 198;
+    }
+    .mobile-nav-backdrop.open { display: block; }
+
+    @media (max-width: 768px) {
+      /* App shell */
+      #app.visible { flex-direction: column; }
+      .main-wrap { height: 100vh; }
+
+      /* Bottom nav */
+      .mobile-nav { display: flex; }
+
+      /* Content area: leave room for bottom nav */
+      .content-area { padding: 14px 12px; padding-bottom: 70px; }
+
+      /* Topbar: tighten up */
+      .topbar { padding: 0 12px; gap: 8px; }
+      .topbar-title { font-size: 14px; }
+      .search-wrap { max-width: none; flex: 1; }
+      .topbar-actions .btn span:not(.btn-icon) { display: none; }
+      .topbar-actions .btn { padding: 7px 10px; }
+
+      /* Dashboard grid → single column */
+      #section-dashboard > div[style*="grid"] {
+        display: flex !important; flex-direction: column !important; gap: 14px !important;
+      }
+
+      /* Stats grid */
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .stat-value { font-size: 22px; }
+
+      /* Kanban / board: allow horizontal scroll */
+      .kanban-wrap, .board-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+      /* Quotes KPI */
+      .quotes-kpi-row { grid-template-columns: 1fr; gap: 10px; }
+
+      /* Modals: full-screen on mobile */
+      .modal-overlay { padding: 0; align-items: flex-end; }
+      .modal {
+        max-width: 100%; width: 100%; max-height: 92vh;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      }
+
+      /* Tables: allow horizontal scroll */
+      .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      tbody td { padding: 9px 10px; font-size: 12px; }
+      thead th { padding: 8px 10px; font-size: 10px; }
+
+      /* Login card */
+      .login-card { padding: 28px 20px; }
+
+      /* Toast */
+      .toast-container { bottom: 66px; right: 10px; left: 10px; }
+      .toast { max-width: 100%; }
+
+      /* Detail grid */
+      .detail-grid { grid-template-columns: 1fr; }
+
+      /* Activity tabs: scrollable */
+      .activity-tabs { overflow-x: auto; white-space: nowrap; flex-wrap: nowrap; padding-bottom: 4px; }
+
+      /* Leads toolbar */
+      .leads-toolbar { flex-wrap: wrap; }
+      .leads-search-wrap { max-width: 100%; width: 100%; }
+
+      /* Pipeline controls */
+      .pipeline-controls { flex-wrap: wrap; }
+
+      /* Task calendar cells */
+      .cal-cell { min-height: 44px; padding: 3px; font-size: 10px; }
+      .cal-day-name { font-size: 9px; padding-bottom: 4px; }
+      .cal-num { font-size: 10px !important; }
+      .cal-task-dot { display: none; }
+
+      /* Board columns */
+      .board-col { width: 220px; }
+      .kcol { min-width: 220px; }
+    }
+
     /* loading spinner */
     .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border-light); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -389,12 +504,212 @@
     .loading-overlay.hidden { display: none; }
     .loading-text { color: var(--text-secondary); font-size: 14px; }
 
+    /* ============================================================
+       TASK DAY DETAIL PANEL (inline below calendar)
+    ============================================================ */
+    .task-day-panel {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); margin-top: 14px; overflow: hidden;
+    }
+    .task-day-panel-header {
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(34,197,94,.06);
+    }
+    .task-day-panel-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+    .task-day-panel-close {
+      background: none; border: none; color: var(--text-muted);
+      font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 4px;
+    }
+    .task-day-panel-close:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .task-day-list { padding: 0 16px; }
+
+    /* ============================================================
+       INLINE EDIT CELL
+    ============================================================ */
+    .edit-inline-input {
+      background: var(--bg-input); border: 1px solid var(--green);
+      border-radius: 4px; padding: 4px 8px; color: var(--text-primary);
+      font-size: 13px; outline: none; width: 100%; min-width: 80px;
+    }
+    .edit-inline-select {
+      background: var(--bg-input); border: 1px solid var(--green);
+      border-radius: 4px; padding: 4px 8px; color: var(--text-primary);
+      font-size: 12px; outline: none; cursor: pointer;
+    }
+
     /* tag */
     .tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 500; background: var(--bg-hover); color: var(--text-secondary); border: 1px solid var(--border); margin: 2px; }
 
     /* progress bar */
     .progress-bar-wrap { background: var(--border); border-radius: 4px; height: 6px; overflow: hidden; }
     .progress-bar-fill { height: 100%; border-radius: 4px; background: var(--green); transition: width .4s; }
+
+    /* ============================================================
+       ENHANCED TABLE STYLES
+    ============================================================ */
+    .who-cell { display: flex; align-items: center; gap: 10px; }
+    .who-cell .av {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 11px; flex-shrink: 0;
+    }
+    .who-cell .nm small { color: var(--text-muted); font-weight: 500; display:block; font-size: 11.5px; }
+    .row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+    .mini-btn {
+      border: 1px solid var(--border); background: var(--bg-card);
+      width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      color: var(--text-secondary); cursor: pointer; font-size: 13px;
+    }
+    .mini-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .mini-btn.danger:hover { background: rgba(239,68,68,.15); color: #f87171; border-color: rgba(239,68,68,.3); }
+
+    /* ============================================================
+       TASK CALENDAR
+    ============================================================ */
+    .task-calendar { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; margin-bottom: 20px; }
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .cal-header h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .cal-nav { display: flex; align-items: center; gap: 8px; }
+    .cal-nav button { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-secondary); cursor: pointer; padding: 5px 10px; font-family: inherit; font-size: 13px; transition: background .12s; }
+    .cal-nav button:hover { background: rgba(34,197,94,.1); color: var(--green); border-color: var(--green); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
+    .cal-day-name { text-align: center; font-size: 10.5px; font-weight: 700; color: var(--text-muted); padding: 4px 0 8px; text-transform: uppercase; letter-spacing: .06em; }
+    .cal-cell { min-height: 68px; border-radius: var(--radius); padding: 6px; border: 1px solid var(--border); background: var(--bg-panel); font-size: 12px; cursor: default; transition: background .1s; }
+    .cal-cell:hover { background: var(--bg-hover); }
+    .cal-cell.today { border-color: var(--green); background: rgba(34,197,94,.07); }
+    .cal-cell.other-month { opacity: .35; }
+    .cal-cell .cal-num { font-weight: 700; font-size: 12px; color: var(--text-secondary); margin-bottom: 3px; }
+    .cal-cell.today .cal-num { color: var(--green); }
+    .cal-cell.has-activity { border-color: rgba(34,197,94,.3); }
+    .cal-cell.selected { border-color: var(--green); background: rgba(34,197,94,.12); box-shadow: 0 0 0 1px var(--green); }
+    .cal-task-dot { display: block; font-size: 10px; font-weight: 600; background: rgba(34,197,94,.12); color: var(--green); border-radius: 4px; padding: 1px 4px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .cal-task-dot.overdue { background: rgba(239,68,68,.12); color: #f87171; }
+    .cal-task-dot.done { background: rgba(100,116,139,.12); color: #94a3b8; text-decoration: line-through; opacity: .7; }
+
+    /* ============================================================
+       TASK GROUP CARDS
+    ============================================================ */
+    .task-group { margin-bottom: 14px; }
+    .task-group-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .task-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .task-row:last-child { border-bottom: none; }
+    .task-row-main { flex: 1; min-width: 0; }
+    .task-row-main b { font-size: 13px; color: var(--text-primary); }
+    .task-row-main small { color: var(--text-muted); display: block; font-size: 11.5px; margin-top: 1px; }
+    .task-done-btn { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; transition: all .15s; }
+    .task-done-btn:hover { border-color: var(--green); color: var(--green); }
+    .task-done-btn.done { border-color: var(--green); background: rgba(34,197,94,.15); color: var(--green); }
+
+    /* ============================================================
+       ENHANCED LEADS TABLE
+    ============================================================ */
+    .leads-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .leads-search-wrap { flex: 1; max-width: 300px; position: relative; }
+    .leads-search-wrap input {
+      width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 7px 12px 7px 34px; color: var(--text-primary);
+      font-size: 13px; outline: none; transition: border-color .2s;
+    }
+    .leads-search-wrap input:focus { border-color: var(--green); }
+    .leads-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px; pointer-events: none; }
+
+    /* ============================================================
+       QUOTES KPI ROW
+    ============================================================ */
+    .quotes-kpi-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px; }
+
+    /* ============================================================
+       KANBAN ENHANCEMENTS
+    ============================================================ */
+    .kcol {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      display: flex; flex-direction: column; max-height: calc(100vh - 230px); min-width: 280px;
+    }
+    .kcol-head {
+      display: flex; align-items: center; gap: 8px; padding: 12px 14px 10px;
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .k-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .k-name { font-weight: 700; font-size: 12.5px; color: var(--text-primary); }
+    .k-count { font-size: 11px; color: var(--text-muted); background: var(--bg-hover); padding: 1px 7px; border-radius: 20px; font-weight: 700; }
+    .k-sum { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+    .kcol-body { padding: 8px 10px 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 60px; }
+    .deal-card {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px; cursor: grab; transition: box-shadow .12s, transform .04s;
+      border-left: 3px solid var(--green);
+    }
+    .deal-card:hover { box-shadow: var(--shadow); border-color: var(--border-light); }
+    .deal-card.dragging { opacity: .35; }
+    .dc-title { font-weight: 700; font-size: 13px; margin-bottom: 3px; color: var(--text-primary); }
+    .dc-co { color: var(--text-muted); font-size: 11.5px; margin-bottom: 8px; }
+    .dc-meta { display: flex; align-items: center; justify-content: space-between; }
+    .dc-val { font-weight: 800; font-size: 13px; color: var(--green); }
+    .dc-foot { display:flex; align-items:center; gap:6px; margin-top:9px; padding-top:9px; border-top:1px solid var(--border); font-size: 11px; color: var(--text-muted); }
+    .kanban-wrap { overflow-x: auto; padding-bottom: 12px; }
+    .kanban { display: flex; gap: 14px; min-width: max-content; align-items: start; }
+    /* ============================================================
+       STAGE PICKER DROPDOWN
+    ============================================================ */
+    .stage-picker-wrap { position: relative; display: inline-block; }
+    .stage-picker-btn {
+      background: rgba(59,130,246,.1); border: 1px solid rgba(59,130,246,.3);
+      color: var(--accent-blue); border-radius: 6px; padding: 3px 8px;
+      font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap;
+      display: flex; align-items: center; gap: 4px; transition: background .15s;
+    }
+    .stage-picker-btn:hover { background: rgba(59,130,246,.2); }
+    .stage-picker-dropdown {
+      position: fixed;
+      background: var(--bg-panel); border: 1px solid var(--border-light);
+      border-radius: var(--radius); box-shadow: var(--shadow-lg);
+      z-index: 999; min-width: 160px; overflow: hidden; display: none;
+    }
+    .stage-picker-dropdown.open { display: block; }
+    .stage-picker-option {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 13px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: background .12s; white-space: nowrap; color: var(--text-primary);
+    }
+    .stage-picker-option:hover { background: var(--bg-hover); }
+    .stage-picker-option.current { opacity: .4; cursor: default; pointer-events: none; }
+    .sp-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ============================================================
+       ACTIVITY SUB-TABS
+    ============================================================ */
+    .activity-tabs { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:0; }
+    .activity-tab {
+      background: none; border: none; border-bottom: 2px solid transparent;
+      color: var(--text-secondary); font-size: 13px; font-weight: 600;
+      padding: 8px 16px; cursor: pointer; margin-bottom: -1px;
+      transition: color .15s, border-color .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .activity-tab:hover { color: var(--text-primary); }
+    .activity-tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+    /* Activity calendar */
+    .act-cal-cell { min-height: 80px; border-radius: var(--radius); padding: 6px; border: 1px solid var(--border); background: var(--bg-panel); font-size: 12px; cursor: pointer; transition: background .1s; }
+    .act-cal-cell:hover { background: rgba(34,197,94,.07); border-color: var(--green); }
+    .act-cal-cell.today { border-color: var(--green); background: rgba(34,197,94,.07); }
+    .act-cal-cell.other-month { opacity: .35; pointer-events: none; }
+    .act-cal-cell.has-activity { border-color: var(--border-light); }
+    .act-cal-cell.selected { background: rgba(59,130,246,.1); border-color: var(--accent-blue); }
+    .act-dot { display:block; font-size:10px; font-weight:600; border-radius:4px; padding:1px 4px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .act-dot-note   { background:rgba(34,197,94,.12); color:var(--green); }
+    .act-dot-quote  { background:rgba(59,130,246,.12); color:var(--accent-blue); }
+    .act-dot-task   { background:rgba(245,158,11,.12); color:var(--accent-amber); }
+    .act-dot-email  { background:rgba(168,85,247,.12); color:var(--accent-purple); }
+    .act-dot-call   { background:rgba(6,182,212,.12); color:var(--accent-cyan); }
+    .act-dot-gray   { background:rgba(100,116,139,.12); color:#94a3b8; }
+
+    /* Day detail panel */
+    .act-day-panel { background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-lg); padding:16px 18px; margin-top:16px; }
+    .act-day-panel-title { font-size:14px; font-weight:700; color:var(--text-primary); margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
+    .act-day-close { background:none; border:none; color:var(--text-muted); font-size:18px; cursor:pointer; padding:2px 6px; }
+    .act-day-close:hover { color:var(--text-primary); }
   </style>
 </head>
 <body>
@@ -418,10 +733,10 @@
 <div id="login-page">
   <div class="login-card">
     <div class="login-logo-wrap">
-      <img id="login-logo" src="rtav-logo.jpg" alt="RTAV Logo" class="login-logo-img"
+      <img id="login-logo" src="data:image/jpeg;base64,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" alt="RTAV Logo" class="login-logo-img"
            onerror="this.style.display='none';document.getElementById('login-logo-fallback').style.display='flex';" />
       <div id="login-logo-fallback" class="login-logo-img-fallback" style="display:none;">RT<span style="color:#4ade80;">AV</span></div>
-      <div>
+      <div style="text-align:center;">
         <div class="login-title">RTAV CRM</div>
         <div class="login-subtitle">Audio Visual Integration · Sign in to continue</div>
       </div>
@@ -447,7 +762,7 @@
   <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-header">
-      <img id="sidebar-logo" src="rtav-logo.jpg" alt="RTAV" class="sidebar-logo-img"
+      <img id="sidebar-logo" src="data:image/jpeg;base64,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" alt="RTAV" class="sidebar-logo-img"
            onerror="this.style.display='none';document.getElementById('sidebar-logo-fallback').style.display='flex';" />
       <div id="sidebar-logo-fallback" class="sidebar-logo-fallback" style="display:none;">RT</div>
       <div class="sidebar-brand">RT<span>AV</span> CRM</div>
@@ -541,20 +856,45 @@
            LEADS SECTION
       ====================================================== -->
       <div class="section" id="section-leads">
-        <div class="leads-grid" id="leads-grid"></div>
+        <div class="leads-toolbar">
+          <div class="leads-search-wrap">
+            <span class="leads-search-icon">🔍</span>
+            <input type="text" id="leads-search-input" placeholder="Search leads…" oninput="App.filterLeadsTable(this.value)" />
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <div class="table-wrap">
+              <table id="leads-table">
+                <thead>
+                  <tr>
+                    <th>Name</th><th>Email</th><th>Company</th><th>Source</th><th>Status</th><th>Est. Value</th><th>Created</th><th></th>
+                  </tr>
+                </thead>
+                <tbody id="leads-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ======================================================
            CONTACTS SECTION
       ====================================================== -->
       <div class="section" id="section-contacts">
+        <div class="leads-toolbar">
+          <div class="leads-search-wrap">
+            <span class="leads-search-icon">🔍</span>
+            <input type="text" id="contacts-search-input" placeholder="Search contacts…" oninput="App.filterContactsTable(this.value)" />
+          </div>
+        </div>
         <div class="card">
           <div class="card-body" style="padding:0;">
             <div class="table-wrap">
               <table id="contacts-table">
                 <thead>
                   <tr>
-                    <th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Status</th>
+                    <th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Status</th><th></th>
                   </tr>
                 </thead>
                 <tbody id="contacts-tbody"></tbody>
@@ -585,7 +925,7 @@
       </div>
 
       <!-- ======================================================
-           DEALS SECTION (renamed from Pipeline)
+           DEALS SECTION (Kanban + List toggle)
       ====================================================== -->
       <div class="section" id="section-deals">
         <div class="pipeline-controls">
@@ -600,14 +940,14 @@
           <span id="deals-stage-filter-wrap" style="display:flex;gap:6px;flex-wrap:wrap;"></span>
         </div>
         <div class="deals-board-view" id="deals-board-view">
-          <div class="board-scroll"><div class="board" id="deals-board"></div></div>
+          <div class="kanban-wrap"><div class="kanban" id="deals-board"></div></div>
         </div>
         <div class="deals-list-view" id="deals-list-view">
           <div class="card">
             <div class="card-body" style="padding:0;">
               <div class="table-wrap">
                 <table>
-                  <thead><tr><th>Deal</th><th>Company</th><th>Stage</th><th>Value</th><th>Close Date</th><th>Owner</th></tr></thead>
+                  <thead><tr><th>Deal</th><th>Company</th><th>Contact</th><th>Stage</th><th>Value</th><th>Probability</th><th>Close Date</th><th>Owner</th><th>Notes</th><th></th></tr></thead>
                   <tbody id="deals-list-tbody"></tbody>
                 </table>
               </div>
@@ -620,11 +960,12 @@
            QUOTES SECTION
       ====================================================== -->
       <div class="section" id="section-quotes">
+        <div class="quotes-kpi-row" id="quotes-kpi-row"></div>
         <div class="card">
           <div class="card-body" style="padding:0;">
             <div class="table-wrap">
               <table>
-                <thead><tr><th>Quote #</th><th>Customer</th><th>Amount</th><th>Status</th><th>Sent</th></tr></thead>
+                <thead><tr><th>Quote #</th><th>Customer</th><th>Status</th><th>Total</th><th>Issued</th><th>Valid Until</th><th></th></tr></thead>
                 <tbody id="quotes-tbody"></tbody>
               </table>
             </div>
@@ -636,26 +977,31 @@
            TASKS SECTION
       ====================================================== -->
       <div class="section" id="section-tasks">
-        <div class="card">
-          <div class="card-body" style="padding:0;">
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Task</th><th>Related To</th><th>Due</th><th>Priority</th><th>Status</th></tr></thead>
-                <tbody id="tasks-tbody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <div id="tasks-calendar-wrap"></div>
+        <div id="tasks-groups-wrap"></div>
       </div>
 
       <!-- ======================================================
            ACTIVITY SECTION
       ====================================================== -->
       <div class="section" id="section-activity">
-        <div class="card">
-          <div class="card-header"><span class="card-title">All Activity</span></div>
-          <div class="card-body">
-            <div class="activity-list" id="activity-list"></div>
+        <!-- Sub-tab nav -->
+        <div class="activity-tabs" id="activity-tabs">
+          <button class="activity-tab active" id="act-tab-calendar" onclick="App.setActivityView('calendar')">📅 Calendar</button>
+          <button class="activity-tab" id="act-tab-list" onclick="App.setActivityView('list')">☰ List</button>
+        </div>
+        <!-- Calendar view -->
+        <div id="activity-calendar-view">
+          <div id="activity-cal-wrap"></div>
+          <div id="activity-day-detail" style="display:none;"></div>
+        </div>
+        <!-- List view -->
+        <div id="activity-list-view" style="display:none;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">All Activity</span></div>
+            <div class="card-body">
+              <div class="activity-list" id="activity-list"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -866,7 +1212,6 @@
             <option value="proposal">Proposal</option>
             <option value="negotiation">Negotiation</option>
             <option value="won">Won</option>
-            <option value="lost">Lost</option>
           </select>
         </div>
       </div>
@@ -888,6 +1233,282 @@
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="App.closeModal('add-deal')">Cancel</button>
       <button class="btn btn-primary" onclick="App.saveDeal()">Save Deal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Deal -->
+<div class="modal-overlay" id="modal-edit-deal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Deal</span>
+      <button class="modal-close" onclick="App.closeModal('edit-deal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-deal-id" />
+      <div class="form-group">
+        <label class="form-label">Deal Name</label>
+        <input class="form-control" id="edit-deal-name" placeholder="Boardroom AV Upgrade" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company</label>
+        <input class="form-control" id="edit-deal-company" placeholder="Acme Corp" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Value ($)</label>
+          <input class="form-control" id="edit-deal-value" type="number" placeholder="50000" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stage</label>
+          <select class="form-control" id="edit-deal-stage">
+            <option value="new deals">New Deals</option>
+            <option value="prospect">Prospect</option>
+            <option value="proposal">Proposal</option>
+            <option value="negotiation">Negotiation</option>
+            <option value="won">Won</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Close Date</label>
+          <input class="form-control" id="edit-deal-close" type="date" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Owner</label>
+          <input class="form-control" id="edit-deal-owner" placeholder="Priya Patel" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="edit-deal-notes" placeholder="Deal notes…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('edit-deal')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveEditDeal()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Lead -->
+<div class="modal-overlay" id="modal-edit-lead">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Lead</span>
+      <button class="modal-close" onclick="App.closeModal('edit-lead')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-lead-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-control" id="edit-lead-fname" placeholder="Jane" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-control" id="edit-lead-lname" placeholder="Smith" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company</label>
+        <input class="form-control" id="edit-lead-company" placeholder="Acme Corp" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" id="edit-lead-email" type="email" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" id="edit-lead-phone" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Source</label>
+          <select class="form-control" id="edit-lead-source">
+            <option value="Referral">Referral</option>
+            <option value="Trade Show">Trade Show</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Email Campaign">Email Campaign</option>
+            <option value="Partner">Partner</option>
+            <option value="Webinar">Webinar</option>
+            <option value="Website">Website</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-control" id="edit-lead-status">
+            <option value="New">New</option>
+            <option value="Hot">Hot</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Cold">Cold</option>
+            <option value="Qualified">Qualified</option>
+            <option value="Unqualified">Unqualified</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Est. Value ($)</label>
+          <input class="form-control" id="edit-lead-value" type="number" placeholder="50000" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="edit-lead-notes" placeholder="Notes…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('edit-lead')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveEditLead()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Contact -->
+<div class="modal-overlay" id="modal-edit-contact">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Contact</span>
+      <button class="modal-close" onclick="App.closeModal('edit-contact')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-contact-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-control" id="edit-contact-fname" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-control" id="edit-contact-lname" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company</label>
+        <input class="form-control" id="edit-contact-company" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-control" id="edit-contact-email" type="email" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" id="edit-contact-phone" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input class="form-control" id="edit-contact-title" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-control" id="edit-contact-status">
+          <option value="active">Active</option>
+          <option value="prospect">Prospect</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('edit-contact')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveEditContact()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Quote -->
+<div class="modal-overlay" id="modal-edit-quote">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Quote</span>
+      <button class="modal-close" onclick="App.closeModal('edit-quote')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-quote-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Quote Number</label>
+          <input class="form-control" id="edit-quote-number" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Customer</label>
+          <input class="form-control" id="edit-quote-customer" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Amount ($)</label>
+          <input class="form-control" id="edit-quote-amount" type="number" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-control" id="edit-quote-status">
+            <option value="draft">Draft</option>
+            <option value="sent">Sent</option>
+            <option value="accepted">Accepted</option>
+            <option value="declined">Declined</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" id="edit-quote-desc"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('edit-quote')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveEditQuote()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Task -->
+<div class="modal-overlay" id="modal-edit-task">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Task</span>
+      <button class="modal-close" onclick="App.closeModal('edit-task')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-task-id" />
+      <div class="form-group">
+        <label class="form-label">Task Title</label>
+        <input class="form-control" id="edit-task-title" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Related To</label>
+        <input class="form-control" id="edit-task-related" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input class="form-control" id="edit-task-due" type="date" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-control" id="edit-task-priority">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-control" id="edit-task-status">
+          <option value="pending">Pending</option>
+          <option value="in progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('edit-task')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveEditTask()">Save Changes</button>
     </div>
   </div>
 </div>
@@ -1034,8 +1655,10 @@
 /* ============================================================
    CONSTANTS
 ============================================================ */
-const API_BASE_URL = "https://ba81-103-181-223-146.ngrok-free.app/api";
-const SYSTEM_API_SECRET_KEY = "your_32_character_security_key_here";
+// Demo mode — no external database (sample data only)
+const NOCODB_TOKEN  = "";
+const NOCODB_BASE   = "";
+const NOCODB_TABLES = {};
 
 const TENANT_ID = "77777777-7777-7777-7777-777777777777";
 const OWNER_ID  = "11111111-1111-1111-1111-111111111111";
@@ -1056,106 +1679,119 @@ let ACCESS_LIST = {
    Falls back to in-memory state when server is unreachable
 ============================================================ */
 const Store = (() => {
-  // In-memory state (empty boot)
+  /* =====================================================
+     SAMPLE DATA — realistic AV integration company CRM
+  ===================================================== */
   const _mem = {
-    leads:     [],
-    contacts:  [],
-    companies: [],
-    deals:     [],
-    quotes:    [],
-    tasks:     [],
-    activities:[]
+    companies: [
+      { id:"co1", name:"Skyline Convention Centre", industry:"Events & Hospitality", city:"Mumbai", revenue:"$8.5M", employees:120, website:"skylinecc.in" },
+      { id:"co2", name:"Pinnacle Hotels Group",     industry:"Hospitality",          city:"Delhi",  revenue:"$22M",  employees:450, website:"pinnaclehotels.com" },
+      { id:"co3", name:"TechPark Offices Ltd",      industry:"Commercial Real Estate",city:"Pune",   revenue:"$5M",   employees:80,  website:"techparkindia.com" },
+      { id:"co4", name:"BlueStar Education Trust",  industry:"Education",            city:"Bangalore",revenue:"$3M",  employees:200, website:"bluestaredu.org" },
+      { id:"co5", name:"Meridian Broadcasting",     industry:"Media & Broadcasting", city:"Mumbai", revenue:"$15M",  employees:310, website:"meridianbc.tv" },
+      { id:"co6", name:"Nexus Retail Pvt Ltd",      industry:"Retail",               city:"Chennai",revenue:"$12M",  employees:560, website:"nexusretail.in" }
+    ],
+    contacts: [
+      { id:"ct1", first_name:"Arjun",   last_name:"Mehta",     company:"Skyline Convention Centre", email:"arjun.mehta@skylinecc.in",    phone:"+91 98201 11234", title:"AV Director",        status:"active" },
+      { id:"ct2", first_name:"Priya",   last_name:"Sharma",    company:"Pinnacle Hotels Group",     email:"priya.sharma@pinnaclehotels.com",phone:"+91 99876 54321",title:"IT Infrastructure Head",status:"active" },
+      { id:"ct3", first_name:"Rohan",   last_name:"D'Souza",   company:"TechPark Offices Ltd",      email:"rohan.dsouza@techparkindia.com",phone:"+91 95551 88900",title:"Facilities Manager",  status:"active" },
+      { id:"ct4", first_name:"Sneha",   last_name:"Kapoor",    company:"BlueStar Education Trust",  email:"sneha.kapoor@bluestaredu.org",  phone:"+91 87654 32100",title:"Principal",            status:"prospect" },
+      { id:"ct5", first_name:"Vikram",  last_name:"Nair",      company:"Meridian Broadcasting",     email:"vikram.nair@meridianbc.tv",     phone:"+91 92200 77655",title:"Technical Director",  status:"active" },
+      { id:"ct6", first_name:"Anjali",  last_name:"Verma",     company:"Nexus Retail Pvt Ltd",      email:"anjali.verma@nexusretail.in",   phone:"+91 70001 22334",title:"Procurement Head",    status:"active" },
+      { id:"ct7", first_name:"Siddharth",last_name:"Rao",      company:"Skyline Convention Centre", email:"sid.rao@skylinecc.in",          phone:"+91 98765 43210",title:"Event Coordinator",   status:"active" },
+      { id:"ct8", first_name:"Meera",   last_name:"Pillai",    company:"Pinnacle Hotels Group",     email:"meera.pillai@pinnaclehotels.com",phone:"+91 91234 56789",title:"Operations Manager",  status:"prospect" }
+    ],
+    leads: [
+      { id:"ld1", first_name:"Rahul",  last_name:"Joshi",    company:"Orbit Multiplex",           email:"rahul.joshi@orbitmultiplex.com", phone:"+91 98100 56789", source:"Referral",      status:"Hot",      value:180000, notes:"Interested in full-hall AV overhaul for 3 screens.", created_at:"2026-05-10T09:00:00Z" },
+      { id:"ld2", first_name:"Kavita", last_name:"Iyer",     company:"Coastal Resorts Ltd",        email:"kavita.iyer@coastalresorts.com", phone:"+91 77001 22999", source:"LinkedIn",      status:"Moderate", value:95000,  notes:"Needs outdoor poolside sound system.", created_at:"2026-05-18T11:30:00Z" },
+      { id:"ld3", first_name:"Deepak", last_name:"Pillai",   company:"GreenField School",          email:"d.pillai@greenfield.edu",        phone:"+91 88002 33444", source:"Trade Show",    status:"New",      value:62000,  notes:"Met at AV Expo 2026. Smart classroom pilot project.", created_at:"2026-05-22T14:00:00Z" },
+      { id:"ld4", first_name:"Nisha",  last_name:"Gupta",    company:"Prestige Convention Hall",   email:"nisha@prestigecc.in",            phone:"+91 91111 55677", source:"Webinar",       status:"Hot",      value:240000, notes:"Wants turnkey solution — lighting, sound, display.", created_at:"2026-05-28T10:15:00Z" },
+      { id:"ld5", first_name:"Anand",  last_name:"Krishnan", company:"Zephyr Corporate Park",      email:"anand.k@zephyrpark.com",         phone:"+91 99000 12345", source:"Email Campaign",status:"Cold",     value:50000,  notes:"Initial enquiry via newsletter. Follow up needed.", created_at:"2026-06-01T08:45:00Z" }
+    ],
+    deals: [
+      { id:"dl1", name:"Skyline Grand Hall AV Upgrade",   company:"Skyline Convention Centre", contact:"Arjun Mehta",   value:420000, stage:"proposal",    close_date:"2026-07-15", owner:"Tristan", probability:65, notes:"Full Crestron control system + 4K projection. Proposal v2 sent."   , created_at:"2026-04-10T09:00:00Z" },
+      { id:"dl2", name:"Pinnacle Hotels Boardroom Suite", company:"Pinnacle Hotels Group",     contact:"Priya Sharma",  value:185000, stage:"negotiation",  close_date:"2026-06-30", owner:"Rohan",   probability:80, notes:"5 boardrooms. Client wants staged rollout over 3 months.",          created_at:"2026-04-18T11:00:00Z" },
+      { id:"dl3", name:"TechPark Open-Office Sound",      company:"TechPark Offices Ltd",      contact:"Rohan D'Souza", value:98000,  stage:"won",          close_date:"2026-05-20", owner:"Tristan", probability:100,notes:"Signed. Installation begins June 10.",                             created_at:"2026-03-25T10:00:00Z" },
+      { id:"dl4", name:"BlueStar Smart Classroom Pilot",  company:"BlueStar Education Trust",  contact:"Sneha Kapoor",  value:73500,  stage:"prospect",     close_date:"2026-08-01", owner:"Roshan",  probability:40, notes:"3 classrooms as pilot. Budget approval pending from board.",       created_at:"2026-05-05T14:00:00Z" },
+      { id:"dl5", name:"Meridian Studio AV Refresh",      company:"Meridian Broadcasting",     contact:"Vikram Nair",   value:310000, stage:"new deals",    close_date:"2026-09-01", owner:"Rohan",   probability:20, notes:"Early stage. Site survey scheduled for June 12.",                  created_at:"2026-05-30T09:30:00Z" },
+      { id:"dl6", name:"Nexus Retail In-Store Audio",     company:"Nexus Retail Pvt Ltd",      contact:"Anjali Verma",  value:156000, stage:"proposal",     close_date:"2026-07-30", owner:"Tristan", probability:55, notes:"12 stores across South India. Standardised speaker setup.",       created_at:"2026-05-12T16:00:00Z" },
+      { id:"dl7", name:"Orbit Multiplex Screen System",   company:"Orbit Multiplex",           contact:"Rahul Joshi",   value:212000, stage:"prospect",     close_date:"2026-08-20", owner:"Roshan",  probability:35, notes:"Converted from lead. Awaiting technical spec sign-off.",           created_at:"2026-05-15T10:00:00Z" },
+      { id:"dl8", name:"Skyline Hall 2 — Phase 2",        company:"Skyline Convention Centre", contact:"Siddharth Rao", value:95000,  stage:"new deals",    close_date:"2026-10-01", owner:"Tristan", probability:15, notes:"Follow-on from Hall 1 project if Phase 1 goes well.",              created_at:"2026-06-01T08:00:00Z" }
+    ],
+    quotes: [
+      { id:"qt1", number:"RTAV-2026-001", customer:"Skyline Convention Centre", amount:420000, status:"sent",     description:"Full AV package — Crestron control, 4K laser projection, line array speakers.",  created_at:"2026-05-01T09:00:00Z", valid_until:"2026-06-30" },
+      { id:"qt2", number:"RTAV-2026-002", customer:"Pinnacle Hotels Group",     amount:185000, status:"accepted", description:"Boardroom AV suite — video conferencing, ceiling speakers, 85\" displays.",       created_at:"2026-05-10T10:00:00Z", valid_until:"2026-06-15" },
+      { id:"qt3", number:"RTAV-2026-003", customer:"TechPark Offices Ltd",      amount:98000,  status:"accepted", description:"Open-office directional sound system with Dante network audio.",                  created_at:"2026-04-15T11:00:00Z", valid_until:"2026-05-31" },
+      { id:"qt4", number:"RTAV-2026-004", customer:"BlueStar Education Trust",  amount:73500,  status:"draft",    description:"Smart classroom pilot — interactive displays, ceiling mics, teacher station.",    created_at:"2026-05-20T14:00:00Z", valid_until:"2026-07-15" },
+      { id:"qt5", number:"RTAV-2026-005", customer:"Nexus Retail Pvt Ltd",      amount:156000, status:"sent",     description:"Retail in-store BGM system — 12 locations, zone control, IP speakers.",           created_at:"2026-05-25T09:30:00Z", valid_until:"2026-07-01" },
+      { id:"qt6", number:"RTAV-2026-006", customer:"Orbit Multiplex",           amount:212000, status:"draft",    description:"3-screen multiplex AV overhaul — 4K projectors, surround sound, control system.", created_at:"2026-06-02T10:00:00Z", valid_until:"2026-07-31" }
+    ],
+    tasks: [
+      { id:"tk1", title:"Send revised proposal to Skyline",          related:"Skyline Grand Hall AV Upgrade",   due_date:"2026-06-06", priority:"high",   status:"pending"   },
+      { id:"tk2", title:"Schedule site survey — Meridian Studio",     related:"Meridian Studio AV Refresh",      due_date:"2026-06-12", priority:"medium", status:"pending"   },
+      { id:"tk3", title:"Follow up with Priya Sharma on contract",    related:"Pinnacle Hotels Boardroom Suite",  due_date:"2026-06-05", priority:"high",   status:"pending"   },
+      { id:"tk4", title:"Prepare BlueStar classroom demo materials",  related:"BlueStar Smart Classroom Pilot",  due_date:"2026-06-18", priority:"medium", status:"pending"   },
+      { id:"tk5", title:"Call Rahul Joshi — Orbit Multiplex specs",   related:"Orbit Multiplex Screen System",   due_date:"2026-06-07", priority:"medium", status:"pending"   },
+      { id:"tk6", title:"Submit TechPark installation schedule",      related:"TechPark Open-Office Sound",      due_date:"2026-06-04", priority:"high",   status:"completed" },
+      { id:"tk7", title:"Invoice Pinnacle Hotels — deposit 30%",      related:"Pinnacle Hotels Boardroom Suite",  due_date:"2026-06-08", priority:"high",   status:"pending"   },
+      { id:"tk8", title:"Order Crestron panels for Skyline project",  related:"Skyline Grand Hall AV Upgrade",   due_date:"2026-06-15", priority:"medium", status:"pending"   },
+      { id:"tk9", title:"Close quote RTAV-2026-004 with BlueStar",    related:"BlueStar Smart Classroom Pilot",  due_date:"2026-06-20", priority:"low",    status:"pending"   },
+      { id:"tk10",title:"Update CRM pipeline after Nexus call",       related:"Nexus Retail In-Store Audio",     due_date:"2026-06-03", priority:"low",    status:"completed" }
+    ],
+    activities: [
+      { id:"ac1",  type:"note",  title:"Quote RTAV-2026-003 accepted",          meta:"TechPark Offices Ltd · $98,000",          created_at:"2026-05-20T09:10:00Z" },
+      { id:"ac2",  type:"call",  title:"Call with Priya Sharma",                meta:"Pinnacle Hotels Group — negotiation update",created_at:"2026-05-22T11:30:00Z" },
+      { id:"ac3",  type:"quote", title:"Quote sent: RTAV-2026-001",             meta:"Skyline Convention Centre · $420,000",     created_at:"2026-05-01T09:15:00Z" },
+      { id:"ac4",  type:"note",  title:"New lead: Rahul Joshi",                 meta:"Orbit Multiplex",                          created_at:"2026-05-10T09:05:00Z" },
+      { id:"ac5",  type:"task",  title:"Task created: Send revised proposal",   meta:"Skyline Grand Hall AV Upgrade",            created_at:"2026-06-03T08:00:00Z" },
+      { id:"ac6",  type:"quote", title:"Quote accepted: RTAV-2026-002",         meta:"Pinnacle Hotels Group · $185,000",         created_at:"2026-05-12T14:20:00Z" },
+      { id:"ac7",  type:"note",  title:"Deal created: Meridian Studio AV Refresh",meta:"Meridian Broadcasting · $310,000",      created_at:"2026-05-30T09:35:00Z" },
+      { id:"ac8",  type:"email", title:"Email sent to Anjali Verma",            meta:"Nexus Retail — quote follow-up",           created_at:"2026-05-26T10:00:00Z" },
+      { id:"ac9",  type:"note",  title:"Lead converted: Rahul Joshi",           meta:"Orbit Multiplex · $212,000",              created_at:"2026-05-15T10:10:00Z" },
+      { id:"ac10", type:"call",  title:"Site survey confirmed — TechPark",      meta:"TechPark Offices Ltd",                     created_at:"2026-06-03T15:00:00Z" },
+      { id:"ac11", type:"task",  title:"Task completed: Update CRM pipeline",   meta:"Nexus Retail In-Store Audio",              created_at:"2026-06-03T17:30:00Z" },
+      { id:"ac12", type:"note",  title:"New lead: Nisha Gupta",                 meta:"Prestige Convention Hall",                 created_at:"2026-05-28T10:20:00Z" },
+      { id:"ac13", type:"email", title:"Follow-up email — BlueStar board",      meta:"BlueStar Education Trust",                 created_at:"2026-05-21T09:00:00Z" },
+      { id:"ac14", type:"quote", title:"Quote sent: RTAV-2026-005",             meta:"Nexus Retail Pvt Ltd · $156,000",          created_at:"2026-05-25T09:35:00Z" },
+      { id:"ac15", type:"call",  title:"Intro call with Deepak Pillai",         meta:"GreenField School — Trade Show follow-up", created_at:"2026-05-23T11:00:00Z" }
+    ]
   };
 
-  const COLLECTIONS = Object.keys(_mem);
+  /** Lightweight uid for new records */
+  function _uid() { return Math.random().toString(36).slice(2, 10); }
 
-  /**
-   * Fetch a single collection from the server.
-   * On network error, returns the current in-memory array.
-   */
-  async function _fetchCollection(name) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/${name}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json", "x-api-key": SYSTEM_API_SECRET_KEY }
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      // Accept array directly or { data: [] } shape
-      const arr = Array.isArray(data) ? data : (data.data || data.items || []);
-      _mem[name] = arr;
-      return arr;
-    } catch {
-      return _mem[name];
-    }
-  }
+  /** No-op async get (data already seeded) */
+  async function get() { return { ..._mem }; }
 
-  /**
-   * Boot: fire Promise.all across all endpoints and return structured collection.
-   */
-  async function get() {
-    const results = await Promise.all(COLLECTIONS.map(c => _fetchCollection(c)));
-    const out = {};
-    COLLECTIONS.forEach((c, i) => { out[c] = results[i]; });
-    return out;
-  }
-
-  /**
-   * Save a record to a collection via POST.
-   * Injects tenant_id and owner_id tracking params.
-   * Stores to in-memory on success or failure.
-   */
+  /** Save: just push to in-memory array */
   async function save(collectionName, record) {
-    const payload = {
-      ...record,
-      tenant_id: TENANT_ID,
-      owner_id:  OWNER_ID,
-      created_at: record.created_at || new Date().toISOString()
-    };
-
-    // Optimistically update in-memory
     if (!_mem[collectionName]) _mem[collectionName] = [];
+    const payload = { ...record, id: record.id || _uid(), created_at: record.created_at || new Date().toISOString() };
     _mem[collectionName].push(payload);
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/${collectionName}`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json", "x-api-key": SYSTEM_API_SECRET_KEY },
-        body:    JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const saved = await res.json();
-      // Replace the in-memory optimistic entry with server response
-      const idx = _mem[collectionName].findIndex(r => r === payload);
-      if (idx >= 0) _mem[collectionName][idx] = saved;
-      return saved;
-    } catch {
-      // Keep optimistic record
-      return payload;
-    }
+    return payload;
   }
 
-  /**
-   * Delete a record by id from a collection via DELETE.
-   */
+  /** Remove from in-memory array */
   async function remove(collectionName, id) {
-    _mem[collectionName] = (_mem[collectionName] || []).filter(r => r.id !== id);
-    try {
-      await fetch(`${API_BASE_URL}/${collectionName}/${id}`, { method: "DELETE", headers: { "x-api-key": SYSTEM_API_SECRET_KEY } });
-    } catch { /* silent */ }
+    if (!_mem[collectionName]) return;
+    _mem[collectionName] = _mem[collectionName].filter(r => String(r.id) !== String(id));
   }
 
-  /** Direct in-memory read (no server fetch) */
-  function read(collectionName) {
-    return _mem[collectionName] || [];
+  /** Update in-memory record */
+  async function update(collectionName, id, changes) {
+    const arr = _mem[collectionName] || [];
+    const idx = arr.findIndex(r => String(r.id) === String(id));
+    if (idx >= 0) Object.assign(arr[idx], changes);
+    return arr[idx];
   }
 
-  /** Seed in-memory state with server data */
-  function seed(data) {
-    Object.keys(data).forEach(k => { if (_mem[k] !== undefined) _mem[k] = data[k]; });
-  }
+  /** Direct in-memory read */
+  function read(collectionName) { return _mem[collectionName] || []; }
 
-  return { get, save, remove, read, seed };
+  /** Seed (no-op — already seeded above) */
+  function seed(data) {}
+
+  return { get, save, remove, update, read, seed };
 })();
 
 /* ============================================================
@@ -1207,21 +1843,18 @@ const App = {
   /* ----------------------------------------------------------
      BOOT
   ---------------------------------------------------------- */
-async boot() {
+  async boot() {
     // Show loading
     $("loading-overlay").classList.remove("hidden");
 
-    // Never keep stale demo/localStorage state. Always re-sync from server.
     try {
       const data = await Store.get();
       Store.seed(data);
     } catch (e) {
       // Server unavailable — start with empty state
-      // (but do not overwrite once we have valid server data)
     }
 
     $("loading-overlay").classList.add("hidden");
-
 
     // Wire navigation
     document.querySelectorAll(".nav-item").forEach(el => {
@@ -1272,6 +1905,18 @@ async boot() {
     $("topbar-title").textContent = titles[section] || section;
 
     App.renderTopbarActions(section);
+    // Reset activity sub-view when navigating to activity
+    if (section === "activity") {
+      App._activityView = App._activityView || "calendar";
+      const calView = $("activity-calendar-view");
+      const lstView = $("activity-list-view");
+      if (calView) calView.style.display = App._activityView === "calendar" ? "block" : "none";
+      if (lstView) lstView.style.display = App._activityView === "list" ? "block" : "none";
+      const tabCal = $("act-tab-calendar");
+      const tabLst = $("act-tab-list");
+      if (tabCal) tabCal.classList.toggle("active", App._activityView === "calendar");
+      if (tabLst) tabLst.classList.toggle("active", App._activityView === "list");
+    }
     App.renderCurrentSection();
   },
 
@@ -1378,9 +2023,10 @@ async boot() {
       [l.first_name, l.last_name, l.company, l.email, l.source]
         .join(" ").toLowerCase().includes(q)
     );
-    const grid = $("leads-grid");
+    const tbody = $("leads-tbody");
+    if (!tbody) return;
     if (!items.length) {
-      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">💡</div><div class="empty-state-title">No leads found</div><div class="empty-state-sub">${q ? "Try a different search." : "Add your first lead."}</div></div>`;
+      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">💡</div><div class="empty-state-title">No leads found</div><div class="empty-state-sub">${q ? "Try a different search." : "Add your first lead."}</div></div></td></tr>`;
       return;
     }
     const sourceBadge = s => {
@@ -1388,21 +2034,85 @@ async boot() {
       const c = map[s] || "gray";
       return `<span class="badge badge-${c}">${sanitize(s)}</span>`;
     };
-    grid.innerHTML = items.map(l => `
-      <div class="lead-card" onclick="App.showDetail('lead', '${l.id}')">
-        <div class="lead-card-header">
-          <div>
-            <div class="lead-name">${sanitize(l.first_name||"")} ${sanitize(l.last_name||"")}</div>
-            <div class="lead-company">${sanitize(l.company||"")}</div>
-          </div>
-          ${sourceBadge(l.source||"Other")}
-        </div>
-        ${l.email ? `<div class="lead-source">📧 <span>${sanitize(l.email)}</span></div>` : ""}
-        ${l.phone ? `<div class="lead-source">📞 <span>${sanitize(l.phone)}</span></div>` : ""}
-        ${l.notes ? `<div class="activity-note" style="margin-top:8px;">${sanitize(l.notes)}</div>` : ""}
-        <div class="lead-source" style="margin-top:8px;">Added ${fmtDate(l.created_at)}</div>
-      </div>
-    `).join("");
+    const statusBadge = s => {
+      const map = { Hot:"red", Cold:"blue", Moderate:"amber", New:"gray", Qualified:"green", Unqualified:"gray" };
+      const c = map[s] || "gray";
+      return `<span class="badge badge-${c}">${sanitize(s)}</span>`;
+    };
+    tbody.innerHTML = items.map(l => {
+      // Pull name from normalised fields OR any raw NocoDB field that could hold it
+      const firstName = l.first_name || "";
+      const lastName  = l.last_name  || "";
+      const fullRaw   = l.Title || l.title || l.Name || l.name || "";
+      const name = (firstName + " " + lastName).trim() || fullRaw || "—";
+      const initials = name !== "—" ? name.trim().split(/\s+/).map(w => w[0]).join("").toUpperCase().slice(0,2) : "?";
+      const colors = ["#3b82f6","#a855f7","#06b6d4","#f59e0b","#ef4444"];
+      const color = colors[(name.charCodeAt(0) || 0) % colors.length];
+      const estVal = l.value ? fmt$(l.value) : "—";
+      const email = sanitize(l.email || l.Email || "—");
+      return `
+        <tr onclick="App.showDetail('lead','${l.id}')">
+          <td><div class="who-cell"><span class="av" style="background:${color}">${sanitize(initials)}</span><div class="nm"><strong>${sanitize(name)}</strong></div></div></td>
+          <td><span style="color:var(--accent-blue)">📧 ${email}</span></td>
+          <td>${sanitize(l.company || l.Company || "—")}</td>
+          <td>${sourceBadge(l.source || l.Source || "Other")}</td>
+          <td>${statusBadge(l.status || l.Status || "New")}</td>
+          <td style="color:var(--green);font-weight:700;">${estVal}</td>
+          <td class="td-muted">${fmtDate(l.created_at || l.CreatedAt)}</td>
+          <td><div class="row-actions">
+            <button class="mini-btn" title="Convert to Deal" style="color:var(--accent-amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08);" onclick="event.stopPropagation();App.convertLead('${l.id}')">⚡</button>
+            <button class="mini-btn" title="Edit Lead" onclick="event.stopPropagation();App.editLead('${l.id}')">✏️</button>
+            <button class="mini-btn danger" title="Delete" onclick="event.stopPropagation();App.deleteLead('${l.id}')">🗑️</button>
+          </div></td>
+        </tr>`;
+    }).join("");
+  },
+
+  filterLeadsTable(q) {
+    q = q.toLowerCase();
+    document.querySelectorAll("#leads-tbody tr").forEach(tr => {
+      tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+  },
+
+  filterContactsTable(q) {
+    q = q.toLowerCase();
+    document.querySelectorAll("#contacts-tbody tr").forEach(tr => {
+      tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+  },
+
+  async deleteLead(id) {
+    if (!confirm("Delete this lead?")) return;
+    await Store.remove("leads", id);
+    toast("Lead deleted.", "info");
+    App.updateBadges();
+    App.renderCurrentSection();
+  },
+
+  async convertLead(id) {
+    const leads = Store.read("leads");
+    const l = leads.find(x => x.id === id);
+    if (!l) return;
+    const name = `${l.first_name||""} ${l.last_name||""}`.trim();
+    if (!confirm(`Convert "${name}" into a New Deal? The lead will be removed from the leads list.`)) return;
+    const record = {
+      id: uid(),
+      name: `${l.company||name} — New Deal`,
+      company: l.company||"",
+      value: Number(l.value) || 0,
+      stage: "new deals",
+      close_date: "",
+      owner: l.owner||"",
+      notes: l.notes||""
+    };
+    await Store.save("deals", record);
+    // Remove the lead from NocoDB and in-memory after successful conversion
+    await Store.remove("leads", id);
+    await App.logActivity({ type:"quote", title:`Lead converted: ${name}`, meta: `${record.company} · ${fmt$(record.value)}` });
+    toast(`"${name}" converted to a New Deal! ⚡`, "success");
+    App.updateBadges();
+    App.navigateTo("deals");
   },
 
   /* ----------------------------------------------------------
@@ -1416,21 +2126,116 @@ async boot() {
     );
     const tbody = $("contacts-tbody");
     if (!items.length) {
-      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">No contacts</div></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">No contacts</div></div></td></tr>`;
       return;
     }
     const statusBadge = s => {
       const m = { active:"green", prospect:"blue", inactive:"gray" };
       return `<span class="badge badge-${m[s]||"gray"}">${sanitize(s)}</span>`;
     };
-    tbody.innerHTML = items.map(c => `
-      <tr onclick="App.showDetail('contact', '${c.id}')">
-        <td><strong>${sanitize(c.first_name||"")} ${sanitize(c.last_name||"")}</strong><span class="td-sub">${sanitize(c.title||"")}</span></td>
-        <td>${sanitize(c.company||"—")}</td>
-        <td class="td-muted">${sanitize(c.email||"—")}</td>
-        <td class="td-muted">${sanitize(c.phone||"—")}</td>
-        <td>${statusBadge(c.status||"active")}</td>
-      </tr>`).join("");
+    tbody.innerHTML = items.map(c => {
+      const firstName = c.first_name || "";
+      const lastName  = c.last_name  || "";
+      const fullRaw   = c.Title || c.title || c.Name || c.name || "";
+      const name = (firstName + " " + lastName).trim() || fullRaw || "—";
+      const initials = name !== "—" ? name.trim().split(/\s+/).map(w => w[0]).join("").toUpperCase().slice(0,2) : "?";
+      const colors = ["#3b82f6","#a855f7","#06b6d4","#f59e0b","#ef4444"];
+      const color = colors[(name.charCodeAt(0) || 0) % colors.length];
+      return `
+        <tr onclick="App.showDetail('contact', '${c.id}')">
+          <td><div class="who-cell"><span class="av" style="background:${color}">${sanitize(initials)}</span><div class="nm"><strong>${sanitize(name)}</strong><small>${sanitize(c.title||c.Title||"")}</small></div></div></td>
+          <td>${sanitize(c.company||c.Company||"—")}</td>
+          <td><span style="color:var(--accent-blue)">📧 ${sanitize(c.email||c.Email||"—")}</span></td>
+          <td class="td-muted">${sanitize(c.phone||c.Phone||"—")}</td>
+          <td>${statusBadge(c.status||c.Status||"active")}</td>
+          <td><div class="row-actions">
+            <button class="mini-btn" title="Edit" onclick="event.stopPropagation();App.editContact('${c.id}')">✏️</button>
+            <button class="mini-btn danger" title="Delete" onclick="event.stopPropagation();App.deleteContact('${c.id}')">🗑️</button>
+          </div></td>
+        </tr>`;
+    }).join("");
+  },
+
+  deleteContact(id) {
+    if (!confirm("Delete this contact?")) return;
+    const arr = Store.read("contacts");
+    const idx = arr.findIndex(c => c.id === id);
+    if (idx >= 0) arr.splice(idx, 1);
+    toast("Contact deleted.", "info");
+    App.renderCurrentSection();
+  },
+
+  editLead(id) {
+    const lead = Store.read("leads").find(l => String(l.id) === String(id));
+    if (!lead) return;
+    $("edit-lead-id").value     = lead.id;
+    $("edit-lead-fname").value  = lead.first_name || "";
+    $("edit-lead-lname").value  = lead.last_name  || "";
+    $("edit-lead-company").value= lead.company    || "";
+    $("edit-lead-email").value  = lead.email      || "";
+    $("edit-lead-phone").value  = lead.phone      || "";
+    $("edit-lead-source").value = lead.source     || "Other";
+    $("edit-lead-status").value = lead.status     || "New";
+    $("edit-lead-value").value  = lead.value      || "";
+    $("edit-lead-notes").value  = lead.notes      || "";
+    App.openModal("edit-lead");
+  },
+
+  async saveEditLead() {
+    const id    = $("edit-lead-id").value;
+    const fname = $("edit-lead-fname").value.trim();
+    if (!fname) { toast("First name is required.", "error"); return; }
+    const changes = {
+      first_name: fname,
+      last_name:  $("edit-lead-lname").value.trim(),
+      company:    $("edit-lead-company").value.trim(),
+      email:      $("edit-lead-email").value.trim(),
+      phone:      $("edit-lead-phone").value.trim(),
+      source:     $("edit-lead-source").value,
+      status:     $("edit-lead-status").value,
+      value:      Number($("edit-lead-value").value) || 0,
+      notes:      $("edit-lead-notes").value.trim()
+    };
+    await Store.update("leads", id, changes);
+    App.logActivity({ type:"note", title:`Lead updated: ${fname} ${changes.last_name}`, meta: changes.company });
+    App.closeModal("edit-lead");
+    toast("Lead updated.", "success");
+    App.updateBadges();
+    App.renderCurrentSection();
+  },
+
+  editContact(id) {
+    const c = Store.read("contacts").find(x => String(x.id) === String(id));
+    if (!c) return;
+    $("edit-contact-id").value      = c.id;
+    $("edit-contact-fname").value   = c.first_name || "";
+    $("edit-contact-lname").value   = c.last_name  || "";
+    $("edit-contact-company").value = c.company    || "";
+    $("edit-contact-email").value   = c.email      || "";
+    $("edit-contact-phone").value   = c.phone      || "";
+    $("edit-contact-title").value   = c.title      || "";
+    $("edit-contact-status").value  = c.status     || "active";
+    App.openModal("edit-contact");
+  },
+
+  async saveEditContact() {
+    const id    = $("edit-contact-id").value;
+    const fname = $("edit-contact-fname").value.trim();
+    if (!fname) { toast("First name is required.", "error"); return; }
+    const changes = {
+      first_name: fname,
+      last_name:  $("edit-contact-lname").value.trim(),
+      company:    $("edit-contact-company").value.trim(),
+      email:      $("edit-contact-email").value.trim(),
+      phone:      $("edit-contact-phone").value.trim(),
+      title:      $("edit-contact-title").value.trim(),
+      status:     $("edit-contact-status").value
+    };
+    await Store.update("contacts", id, changes);
+    App.logActivity({ type:"note", title:`Contact updated: ${fname} ${changes.last_name}`, meta: changes.company });
+    App.closeModal("edit-contact");
+    toast("Contact updated.", "success");
+    App.renderCurrentSection();
   },
 
   /* ----------------------------------------------------------
@@ -1458,22 +2263,22 @@ async boot() {
   },
 
   /* ----------------------------------------------------------
-     DEALS  (renamed from Pipeline; new deals = qualification)
+     DEALS  (Kanban board with drag support + list view)
   ---------------------------------------------------------- */
   DEAL_STAGES: [
     { key:"new deals",    label:"New Deals",    color:"#94a3b8" },
     { key:"prospect",     label:"Prospect",     color:"#3b82f6" },
     { key:"proposal",     label:"Proposal",     color:"#f59e0b" },
     { key:"negotiation",  label:"Negotiation",  color:"#a855f7" },
-    { key:"won",          label:"Won",          color:"#22c55e" },
-    { key:"lost",         label:"Lost",         color:"#ef4444" }
+    { key:"won",          label:"Won",          color:"#22c55e" }
   ],
 
   renderDeals() {
     const q    = App._searchQuery;
     let items  = Store.read("deals");
     if (q) items = items.filter(d =>
-      [d.name, d.company, d.stage, d.owner].join(" ").toLowerCase().includes(q)
+      [d.name||d.Name||d.Title||d.title, d.company||d.Company, d.stage||d.Stage, d.owner||d.Owner]
+        .join(" ").toLowerCase().includes(q)
     );
 
     if (App._dealsView === "board") {
@@ -1486,27 +2291,53 @@ async boot() {
   _renderDealsBoard(items) {
     const board = $("deals-board");
     board.innerHTML = App.DEAL_STAGES.map(st => {
-      const cards = items.filter(d => (d.stage || "new deals") === st.key);
-      const total = cards.reduce((s, d) => s + (Number(d.value) || 0), 0);
+      const cards = items.filter(d => {
+        const s = (d.stage || d.Stage || "new deals").toLowerCase().trim();
+        return s === st.key;
+      });
+      const total = cards.reduce((s, d) => s + (Number(d.value || d.Value) || 0), 0);
+      const cardsHtml = cards.length ? cards.map(d => {
+        const dealName    = d.name    || d.Name    || d.Title || d.title || "Untitled";
+        const dealCompany = d.company || d.Company || "";
+        const dealValue   = Number(d.value || d.Value) || 0;
+        const dealClose   = d.close_date || d.CloseDate || d.closeDate || "";
+        const stageOptions = App.DEAL_STAGES.map(s => `
+          <div class="stage-picker-option ${s.key === (d.stage||d.Stage||"new deals") ? "current" : ""}"
+               onclick="event.stopPropagation();App.moveDealStage('${d.id}','${s.key}')">
+            <span class="sp-dot" style="background:${s.color}"></span>${s.label}
+          </div>`).join("");
+        return `
+        <div class="deal-card" data-deal="${d.id}" style="border-left-color:${st.color}" onclick="App.showDetail('deal','${d.id}')">
+          <div class="dc-title">${sanitize(dealName)}</div>
+          <div class="dc-co">🏢 ${sanitize(dealCompany)}</div>
+          <div class="dc-meta">
+            <span class="dc-val">${fmt$(dealValue)}</span>
+            <span class="badge badge-gray" style="font-size:10.5px;">${dealClose ? fmtDate(dealClose) : "No date"}</span>
+          </div>
+          <div class="dc-foot">
+            <div class="stage-picker-wrap" onclick="event.stopPropagation()">
+              <button class="stage-picker-btn" onclick="App.toggleStagePicker('${d.id}',this)">
+                ↕ Move Stage
+              </button>
+              <div class="stage-picker-dropdown" id="sp-${d.id}">
+                ${stageOptions}
+              </div>
+            </div>
+            <button class="mini-btn" title="Edit Deal" style="margin-left:auto;width:22px;height:22px;font-size:11px;" onclick="event.stopPropagation();App.editDeal('${d.id}')">✏️</button>
+            <button class="mini-btn danger" title="Delete" style="width:22px;height:22px;font-size:11px;" onclick="event.stopPropagation();App.deleteDeal('${d.id}')">🗑️</button>
+          </div>
+        </div>`;
+      }).join("") :
+        `<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">Empty</div>`;
       return `
-        <div class="board-col">
-          <div class="board-col-header">
-            <span class="board-col-title" style="color:${st.color};">${st.label}</span>
-            <span class="board-col-count">${cards.length} · ${fmt$(total)}</span>
+        <div class="kcol">
+          <div class="kcol-head">
+            <span class="k-dot" style="background:${st.color}"></span>
+            <span class="k-name">${st.label}</span>
+            <span class="k-count">${cards.length}</span>
+            <span class="k-sum">${fmt$(total)}</span>
           </div>
-          <div class="board-col-body">
-            ${cards.length ? cards.map(d => `
-              <div class="board-card" onclick="App.showDetail('deal','${d.id}')">
-                <div class="board-card-title">${sanitize(d.name||"Untitled")}</div>
-                <div class="board-card-company">${sanitize(d.company||"")}</div>
-                <div class="board-card-footer">
-                  <span class="board-card-value">${fmt$(d.value)}</span>
-                  <span class="board-card-date">${d.close_date ? fmtDate(d.close_date) : ""}</span>
-                </div>
-              </div>`).join("") :
-              `<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">Empty</div>`
-            }
-          </div>
+          <div class="kcol-body" data-stage="${st.key}">${cardsHtml}</div>
         </div>`;
     }).join("");
   },
@@ -1518,18 +2349,116 @@ async boot() {
     };
     const tbody = $("deals-list-tbody");
     if (!items.length) {
-      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">🤝</div><div class="empty-state-title">No deals</div></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">🤝</div><div class="empty-state-title">No deals</div></div></td></tr>`;
       return;
     }
-    tbody.innerHTML = items.map(d => `
+    tbody.innerHTML = items.map(d => {
+      const dealName    = d.name    || d.Name    || d.Title || d.title || "Untitled";
+      const dealCompany = d.company || d.Company || "—";
+      const dealContact = d.contact || d.Contact || d.contact_name || d.ContactName || "";
+      const dealStage   = d.stage   || d.Stage   || "new deals";
+      const dealValue   = Number(d.value || d.Value) || 0;
+      const dealClose   = d.close_date || d.CloseDate || d.closeDate || "";
+      const dealOwner   = d.owner   || d.Owner   || "—";
+      const dealProb    = d.probability || d.Probability || 0;
+      const dealNotes   = d.notes   || d.Notes   || "";
+      return `
       <tr onclick="App.showDetail('deal','${d.id}')">
-        <td><strong>${sanitize(d.name||"Untitled")}</strong></td>
-        <td>${sanitize(d.company||"—")}</td>
-        <td>${stageBadge(d.stage||"new deals")}</td>
-        <td style="color:var(--green);font-weight:700;">${fmt$(d.value)}</td>
-        <td class="td-muted">${d.close_date ? fmtDate(d.close_date) : "—"}</td>
-        <td class="td-muted">${sanitize(d.owner||"—")}</td>
-      </tr>`).join("");
+        <td><strong>${sanitize(dealName)}</strong></td>
+        <td>${sanitize(dealCompany)}</td>
+        <td class="td-muted">${sanitize(dealContact) || "<span style='color:var(--text-muted)'>—</span>"}</td>
+        <td>${stageBadge(dealStage)}</td>
+        <td style="color:var(--green);font-weight:700;">${fmt$(dealValue)}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="progress-bar-wrap" style="width:60px;"><div class="progress-bar-fill" style="width:${dealProb}%"></div></div>
+            <span style="font-size:11px;color:var(--text-muted)">${dealProb}%</span>
+          </div>
+        </td>
+        <td class="td-muted">${dealClose ? fmtDate(dealClose) : "—"}</td>
+        <td class="td-muted">${sanitize(dealOwner)}</td>
+        <td class="td-muted" style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${sanitize(dealNotes)}">${dealNotes ? sanitize(dealNotes.slice(0,40)) + (dealNotes.length > 40 ? "…" : "") : "—"}</td>
+        <td><div class="row-actions">
+          <button class="mini-btn" title="Edit" onclick="event.stopPropagation();App.editDeal('${d.id}')">✏️</button>
+          <button class="mini-btn danger" onclick="event.stopPropagation();App.deleteDeal('${d.id}')">🗑️</button>
+        </div></td>
+      </tr>`;
+    }).join("");
+  },
+
+  editDeal(id) {
+    const deal = Store.read("deals").find(d => String(d.id) === String(id) || String(d.Id) === String(id));
+    if (!deal) return;
+    document.getElementById("edit-deal-id").value    = deal.id || deal.Id;
+    document.getElementById("edit-deal-name").value  = deal.name || "";
+    document.getElementById("edit-deal-company").value = deal.company || "";
+    document.getElementById("edit-deal-value").value  = deal.value || "";
+    document.getElementById("edit-deal-stage").value  = deal.stage || "new deals";
+    document.getElementById("edit-deal-close").value  = deal.close_date || "";
+    document.getElementById("edit-deal-owner").value  = deal.owner || "";
+    document.getElementById("edit-deal-notes").value  = deal.notes || "";
+    App.openModal("edit-deal");
+  },
+
+  async saveEditDeal() {
+    const id   = document.getElementById("edit-deal-id").value;
+    const name = document.getElementById("edit-deal-name").value.trim();
+    if (!name) { toast("Deal name is required.", "error"); return; }
+    const changes = {
+      name,
+      company:    document.getElementById("edit-deal-company").value.trim(),
+      value:      Number(document.getElementById("edit-deal-value").value) || 0,
+      stage:      document.getElementById("edit-deal-stage").value,
+      close_date: document.getElementById("edit-deal-close").value,
+      owner:      document.getElementById("edit-deal-owner").value.trim(),
+      notes:      document.getElementById("edit-deal-notes").value.trim()
+    };
+    await Store.update("deals", id, changes);
+    await App.logActivity({ type:"note", title:`Deal updated: ${name}`, meta: changes.company });
+    App.closeModal("edit-deal");
+    toast("Deal updated.", "success");
+    App.updateBadges();
+    App.renderCurrentSection();
+  },
+
+  async deleteDeal(id) {
+    if (!confirm("Delete this deal?")) return;
+    await Store.remove("deals", id);
+    toast("Deal deleted.", "info");
+    App.updateBadges();
+    App.renderCurrentSection();
+  },
+
+  toggleStagePicker(id, btn) {
+    // Close any other open pickers first
+    document.querySelectorAll(".stage-picker-dropdown.open").forEach(el => {
+      if (el.id !== `sp-${id}`) el.classList.remove("open");
+    });
+    const dropdown = document.getElementById(`sp-${id}`);
+    if (!dropdown) return;
+    if (dropdown.classList.contains("open")) {
+      dropdown.classList.remove("open");
+      return;
+    }
+    // Position using fixed coords from the button
+    const rect = btn.getBoundingClientRect();
+    dropdown.style.top  = (rect.bottom + 6) + "px";
+    dropdown.style.left = rect.left + "px";
+    dropdown.classList.add("open");
+  },
+
+  moveDealStage(id, newStage) {
+    const deals = Store.read("deals");
+    const deal = deals.find(d => d.id === id);
+    if (!deal || deal.stage === newStage) return;
+    const oldStage = deal.stage;
+    deal.stage = newStage;
+    const stageLabel = App.DEAL_STAGES.find(s => s.key === newStage)?.label || newStage;
+    const oldLabel   = App.DEAL_STAGES.find(s => s.key === oldStage)?.label  || oldStage;
+    App.logActivity({ type:"note", title:`Deal moved: ${deal.name}`, meta: `${oldLabel} → ${stageLabel}` });
+    toast(`Moved to "${stageLabel}" ✓`, "success");
+    App.updateBadges();
+    App.renderDeals();
   },
 
   setDealsView(view) {
@@ -1563,70 +2492,368 @@ async boot() {
     if (q) items = items.filter(qt =>
       [qt.number, qt.customer, qt.status].join(" ").toLowerCase().includes(q)
     );
+
+    // KPI cards
+    const totalQuoted = items.reduce((s, qt) => s + (Number(qt.amount) || 0), 0);
+    const accepted = items.filter(qt => qt.status === "accepted").reduce((s, qt) => s + (Number(qt.amount) || 0), 0);
+    const awaitingCount = items.filter(qt => qt.status === "sent").length;
+    const kpiRow = $("quotes-kpi-row");
+    if (kpiRow) {
+      kpiRow.innerHTML = `
+        <div class="stat-card"><div class="stat-icon">📄</div><div class="stat-label">Total Quoted</div><div class="stat-value">${fmt$(totalQuoted)}</div><div class="stat-sub">${items.length} quotes</div></div>
+        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">Accepted</div><div class="stat-value">${fmt$(accepted)}</div><div class="stat-sub">${items.filter(q => q.status==="accepted").length} deals</div></div>
+        <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-label">Awaiting Response</div><div class="stat-value">${awaitingCount}</div><div class="stat-sub">Sent, pending reply</div></div>
+      `;
+    }
+
     const tbody = $("quotes-tbody");
     if (!items.length) {
-      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">📄</div><div class="empty-state-title">No quotes</div></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">📄</div><div class="empty-state-title">No quotes</div></div></td></tr>`;
       return;
     }
     const statusBadge = s => {
       const m = { draft:"gray", sent:"blue", accepted:"green", declined:"red" };
       return `<span class="badge badge-${m[s]||"gray"}">${sanitize(s)}</span>`;
     };
-    tbody.innerHTML = items.map(q => `
-      <tr onclick="App.showDetail('quote','${q.id}')">
-        <td><strong>${sanitize(q.number||"—")}</strong></td>
-        <td>${sanitize(q.customer||"—")}</td>
-        <td style="color:var(--green);font-weight:700;">${fmt$(q.amount)}</td>
-        <td>${statusBadge(q.status||"draft")}</td>
-        <td class="td-muted">${fmtDate(q.created_at)}</td>
+    tbody.innerHTML = items.map(qt => `
+      <tr onclick="App.showDetail('quote','${qt.id}')">
+        <td><strong>${sanitize(qt.number||"—")}</strong></td>
+        <td>${sanitize(qt.customer||"—")}</td>
+        <td>${statusBadge(qt.status||"draft")}</td>
+        <td style="color:var(--green);font-weight:700;">${fmt$(qt.amount)}</td>
+        <td class="td-muted">${fmtDate(qt.created_at)}</td>
+        <td class="td-muted">${qt.valid_until ? fmtDate(qt.valid_until) : "—"}</td>
+        <td><div class="row-actions">
+          <button class="mini-btn" title="Edit" onclick="event.stopPropagation();App.editQuote('${qt.id}')">✏️</button>
+          <button class="mini-btn danger" onclick="event.stopPropagation();App.deleteQuote('${qt.id}')">🗑️</button>
+        </div></td>
       </tr>`).join("");
   },
 
   /* ----------------------------------------------------------
-     TASKS
+     TASKS — calendar + grouped lists
   ---------------------------------------------------------- */
+  _calState: null,
+
   renderTasks() {
-    const q     = App._searchQuery;
-    let items   = Store.read("tasks");
-    if (q) items = items.filter(t =>
-      [t.title, t.related, t.priority, t.status].join(" ").toLowerCase().includes(q)
-    );
-    const tbody = $("tasks-tbody");
-    if (!items.length) {
-      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-title">No tasks</div></div></td></tr>`;
-      return;
+    if (!App._calState) {
+      const now = new Date();
+      App._calState = { year: now.getFullYear(), month: now.getMonth() };
     }
+    App._renderTaskCalendar();
+    App._renderTaskGroups();
+  },
+
+  _renderTaskCalendar() {
+    const wrap = $("tasks-calendar-wrap");
+    if (!wrap) return;
+    const { year, month } = App._calState;
+    const now = new Date();
+    const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrev = new Date(year, month, 0).getDate();
+    const tasks = Store.read("tasks");
+    // Map tasks by due date
+    const tasksByDate = {};
+    tasks.forEach(t => {
+      if (!t.due_date) return;
+      tasksByDate[t.due_date] = tasksByDate[t.due_date] || [];
+      tasksByDate[t.due_date].push(t);
+    });
+    const dayNamesHtml = dayNames.map(d => `<div class="cal-day-name">${d}</div>`).join("");
+    let cells = "";
+    for (let i = firstDay - 1; i >= 0; i--) {
+      cells += `<div class="cal-cell other-month"><div class="cal-num">${daysInPrev - i}</div></div>`;
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+      const isToday = d === now.getDate() && month === now.getMonth() && year === now.getFullYear();
+      const dayTasks = tasksByDate[dateStr] || [];
+      const todayStart = new Date(now.toDateString());
+      const taskDots = dayTasks.slice(0,3).map(t => {
+        const isOverdue = t.status !== "completed" && new Date(t.due_date) < todayStart;
+        const cls = t.status === "completed" ? "done" : isOverdue ? "overdue" : "";
+        const shortTitle = t.title && t.title.length > 14 ? t.title.slice(0,13) + "…" : (t.title||"");
+        return `<span class="cal-task-dot ${cls}" title="${sanitize(t.title||"")}">${sanitize(shortTitle)}</span>`;
+      }).join("");
+      const moreLabel = dayTasks.length > 3 ? `<span class="cal-task-dot" style="opacity:.6">+${dayTasks.length - 3} more</span>` : "";
+      const hasCls = dayTasks.length > 0 ? " has-activity" : "";
+      const selCls = App._taskSelectedDay === dateStr ? " selected" : "";
+      cells += `<div class="cal-cell${isToday ? " today" : ""}${hasCls}${selCls}" style="cursor:pointer;" onclick="App._taskDayClick('${dateStr}')"><div class="cal-num">${d}</div>${taskDots}${moreLabel}</div>`;
+    }
+    const totalCells = firstDay + daysInMonth;
+    const remainder = totalCells % 7;
+    if (remainder) {
+      for (let d = 1; d <= 7 - remainder; d++) {
+        cells += `<div class="cal-cell other-month"><div class="cal-num">${d}</div></div>`;
+      }
+    }
+    wrap.innerHTML = `<div class="task-calendar">
+      <div class="cal-header">
+        <h3>📅 ${monthNames[month]} ${year}</h3>
+        <div class="cal-nav">
+          <button onclick="App._calState.month--;if(App._calState.month<0){App._calState.month=11;App._calState.year--;}App.renderTasks()">&#8249;</button>
+          <button onclick="(function(){var n=new Date();App._calState={year:n.getFullYear(),month:n.getMonth()};App.renderTasks();})()">Today</button>
+          <button onclick="App._calState.month++;if(App._calState.month>11){App._calState.month=0;App._calState.year++;}App.renderTasks()">&#8250;</button>
+        </div>
+      </div>
+      <div class="cal-grid">${dayNamesHtml}${cells}</div>
+    </div>`;
+    App._renderTaskDayDetail();
+  },
+
+  _taskSelectedDay: null,
+
+  _taskDayClick(dateStr) {
+    App._taskSelectedDay = App._taskSelectedDay === dateStr ? null : dateStr;
+    App._renderTaskCalendar();
+  },
+
+  _renderTaskDayDetail() {
+    let panel = $("task-day-detail-panel");
+    if (!panel) {
+      const wrap = $("tasks-calendar-wrap");
+      panel = document.createElement("div");
+      panel.id = "task-day-detail-panel";
+      wrap.appendChild(panel);
+    }
+    if (!App._taskSelectedDay) { panel.innerHTML = ""; return; }
+    const tasks = Store.read("tasks");
+    const dayTasks = tasks.filter(t => t.due_date === App._taskSelectedDay);
+    const dateLabel = new Date(App._taskSelectedDay + "T12:00:00").toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+    const todayStart = new Date(new Date().toDateString());
     const priBadge = p => {
       const m = { low:"gray", medium:"amber", high:"red" };
       return `<span class="badge badge-${m[p]||"gray"}">${sanitize(p)}</span>`;
     };
-    const stBadge = s => {
-      const m = { pending:"amber", "in progress":"blue", completed:"green" };
-      return `<span class="badge badge-${m[s]||"gray"}">${sanitize(s)}</span>`;
+    const taskRows = dayTasks.length ? dayTasks.map(t => {
+      const isOverdue = t.status !== "completed" && new Date(t.due_date) < todayStart;
+      return `<div class="task-row">
+        <button class="task-done-btn ${t.status==="completed"?"done":""}" onclick="App.toggleTask('${t.id}')" title="Toggle done">✓</button>
+        <div class="task-row-main">
+          <b style="${t.status==="completed"?"text-decoration:line-through;color:var(--text-muted)":""}">${sanitize(t.title||"")}</b>
+          <small>${sanitize(t.related||"—")}</small>
+        </div>
+        ${priBadge(t.priority||"low")}
+        <span class="badge badge-${isOverdue?"red":"gray"}" style="font-size:10.5px;">${t.status==="completed"?"✅ Done":isOverdue?"⚠️ Overdue":"📅 Due"}</span>
+        <button class="mini-btn" title="Edit" onclick="App.editTask('${t.id}')">✏️</button>
+        <button class="mini-btn danger" onclick="App.deleteTask('${t.id}')">🗑️</button>
+      </div>`;
+    }).join("") : `<div class="empty-state" style="padding:30px 20px;"><div class="empty-state-icon">💤</div><div class="empty-state-sub">No tasks on this day.</div></div>`;
+    panel.innerHTML = `<div class="task-day-panel">
+      <div class="task-day-panel-header">
+        <span class="task-day-panel-title">📅 ${sanitize(dateLabel)} <span class="badge badge-gray" style="font-size:10px;margin-left:6px;">${dayTasks.length} task${dayTasks.length!==1?"s":""}</span></span>
+        <button class="task-day-panel-close" onclick="App._taskSelectedDay=null;App._renderTaskCalendar();">✕</button>
+      </div>
+      <div class="task-day-list">${taskRows}</div>
+    </div>`;
+  },
+
+  _renderTaskGroups() {
+    const wrap = $("tasks-groups-wrap");
+    if (!wrap) return;
+    const q = App._searchQuery;
+    let items = Store.read("tasks");
+    if (q) items = items.filter(t =>
+      [t.title, t.related, t.priority, t.status].join(" ").toLowerCase().includes(q)
+    );
+
+    const todayStart = new Date(new Date().toDateString());
+    const todayEnd = new Date(todayStart.getTime() + 86400000);
+
+    const groups = [
+      { key:"overdue", label:"⚠️ Overdue", test: t => t.status !== "completed" && new Date(t.due_date) < todayStart },
+      { key:"today",   label:"📅 Today",   test: t => t.status !== "completed" && new Date(t.due_date) >= todayStart && new Date(t.due_date) < todayEnd },
+      { key:"upcoming",label:"🔜 Upcoming", test: t => t.status !== "completed" && new Date(t.due_date) >= todayEnd },
+      { key:"done",    label:"✅ Completed", test: t => t.status === "completed" }
+    ];
+
+    const priBadge = p => {
+      const m = { low:"gray", medium:"amber", high:"red" };
+      return `<span class="badge badge-${m[p]||"gray"}">${sanitize(p)}</span>`;
     };
-    tbody.innerHTML = items.map(t => `
-      <tr onclick="App.showDetail('task','${t.id}')">
-        <td><strong>${sanitize(t.title||"")}</strong></td>
-        <td class="td-muted">${sanitize(t.related||"—")}</td>
-        <td class="td-muted">${t.due_date ? fmtDate(t.due_date) : "—"}</td>
-        <td>${priBadge(t.priority||"low")}</td>
-        <td>${stBadge(t.status||"pending")}</td>
-      </tr>`).join("");
+
+    let html = "";
+    groups.forEach(g => {
+      const groupItems = items.filter(g.test);
+      if (!groupItems.length) return;
+      const rows = groupItems.map(t => `
+        <div class="task-row">
+          <button class="task-done-btn ${t.status==="completed"?"done":""}" onclick="App.toggleTask('${t.id}')" title="Toggle done">✓</button>
+          <div class="task-row-main">
+            <b style="${t.status==="completed"?"text-decoration:line-through;color:var(--text-muted)":""}">${sanitize(t.title||"")}</b>
+            <small>${sanitize(t.related||"—")}</small>
+          </div>
+          ${priBadge(t.priority||"low")}
+          <span class="badge badge-${g.key==="overdue"?"red":"gray"}" style="font-size:10.5px;">📅 ${t.due_date ? fmtDate(t.due_date) : "—"}</span>
+          <button class="mini-btn" title="Edit" onclick="App.editTask('${t.id}')">✏️</button>
+          <button class="mini-btn danger" onclick="App.deleteTask('${t.id}')">🗑️</button>
+        </div>`).join("");
+      html += `<div class="card task-group" style="margin-bottom:14px;">
+        <div class="card-header"><span class="card-title">${g.label} <span class="badge badge-gray" style="font-size:10px;">${groupItems.length}</span></span></div>
+        <div class="card-body" style="padding:0 18px;">${rows}</div>
+      </div>`;
+    });
+
+    if (!html) {
+      html = `<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-title">No tasks yet</div><div class="empty-state-sub">Add your first task using the button above.</div></div>`;
+    }
+    wrap.innerHTML = html;
+  },
+
+  toggleTask(id) {
+    const tasks = Store.read("tasks");
+    const t = tasks.find(x => x.id === id);
+    if (!t) return;
+    t.status = t.status === "completed" ? "pending" : "completed";
+    toast(t.status === "completed" ? "Task marked complete." : "Task reopened.", "info");
+    App.renderTasks();
+  },
+
+  deleteTask(id) {
+    if (!confirm("Delete this task?")) return;
+    const arr = Store.read("tasks");
+    const idx = arr.findIndex(t => t.id === id);
+    if (idx >= 0) arr.splice(idx, 1);
+    toast("Task deleted.", "info");
+    App.renderTasks();
   },
 
   /* ----------------------------------------------------------
-     ACTIVITY
+     ACTIVITY  (calendar + list sub-views)
   ---------------------------------------------------------- */
+  _activityView: "calendar",
+  _actCalState: null,
+  _actSelectedDay: null,
+
+  setActivityView(view) {
+    App._activityView = view;
+    $("act-tab-calendar").classList.toggle("active", view === "calendar");
+    $("act-tab-list").classList.toggle("active", view === "list");
+    $("activity-calendar-view").style.display = view === "calendar" ? "block" : "none";
+    $("activity-list-view").style.display     = view === "list"     ? "block" : "none";
+    App.renderActivity();
+  },
+
   renderActivity() {
-    const q     = App._searchQuery;
-    let items   = [...Store.read("activities")].reverse();
-    if (q) items = items.filter(a =>
-      [a.title, a.meta, a.note].join(" ").toLowerCase().includes(q)
-    );
-    const list = $("activity-list");
-    list.innerHTML = items.length
-      ? items.map(a => App._activityRow(a)).join("")
-      : `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">No activity yet</div></div>`;
+    if (!App._actCalState) {
+      const now = new Date();
+      App._actCalState = { year: now.getFullYear(), month: now.getMonth() };
+    }
+    if (App._activityView === "calendar") {
+      App._renderActivityCalendar();
+    } else {
+      const q   = App._searchQuery;
+      let items = [...Store.read("activities")].reverse();
+      if (q) items = items.filter(a =>
+        [a.title, a.meta, a.note].join(" ").toLowerCase().includes(q)
+      );
+      const list = $("activity-list");
+      if (list) list.innerHTML = items.length
+        ? items.map(a => App._activityRow(a)).join("")
+        : `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">No activity yet</div></div>`;
+    }
+  },
+
+  _renderActivityCalendar() {
+    const wrap = $("activity-cal-wrap");
+    if (!wrap) return;
+    const { year, month } = App._actCalState;
+    const now = new Date();
+    const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrev = new Date(year, month, 0).getDate();
+    const activities = Store.read("activities");
+
+    // Map activities by date (using created_at)
+    const actByDate = {};
+    activities.forEach(a => {
+      if (!a.created_at) return;
+      const dateStr = a.created_at.slice(0, 10);
+      actByDate[dateStr] = actByDate[dateStr] || [];
+      actByDate[dateStr].push(a);
+    });
+
+    const dotClass = type => {
+      const m = { note:"note", quote:"quote", task:"task", email:"email", call:"call" };
+      return "act-dot act-dot-" + (m[type] || "gray");
+    };
+
+    const dayNamesHtml = dayNames.map(d => `<div class="cal-day-name">${d}</div>`).join("");
+    let cells = "";
+    for (let i = firstDay - 1; i >= 0; i--) {
+      cells += `<div class="act-cal-cell other-month"><div class="cal-num">${daysInPrev - i}</div></div>`;
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+      const isToday = d === now.getDate() && month === now.getMonth() && year === now.getFullYear();
+      const isSelected = App._actSelectedDay === dateStr;
+      const dayActs = actByDate[dateStr] || [];
+      const dotsHtml = dayActs.slice(0, 3).map(a =>
+        `<span class="${dotClass(a.type)}" title="${sanitize(a.title||"")}">${sanitize((a.title||"").slice(0,16))}</span>`
+      ).join("");
+      const moreLabel = dayActs.length > 3 ? `<span class="act-dot act-dot-gray">+${dayActs.length - 3} more</span>` : "";
+      const hasCls = dayActs.length > 0 ? " has-activity" : "";
+      const selCls = isSelected ? " selected" : "";
+      cells += `<div class="act-cal-cell${isToday ? " today" : ""}${hasCls}${selCls}" onclick="App._actDayClick('${dateStr}')">
+        <div class="cal-num">${d}</div>${dotsHtml}${moreLabel}
+      </div>`;
+    }
+    const totalCells = firstDay + daysInMonth;
+    const remainder = totalCells % 7;
+    if (remainder) {
+      for (let d = 1; d <= 7 - remainder; d++) {
+        cells += `<div class="act-cal-cell other-month"><div class="cal-num">${d}</div></div>`;
+      }
+    }
+    wrap.innerHTML = `<div class="task-calendar">
+      <div class="cal-header">
+        <h3>📋 ${monthNames[month]} ${year}</h3>
+        <div class="cal-nav">
+          <button onclick="App._actCalState.month--;if(App._actCalState.month<0){App._actCalState.month=11;App._actCalState.year--;}App._renderActivityCalendar()">&#8249;</button>
+          <button onclick="(function(){var n=new Date();App._actCalState={year:n.getFullYear(),month:n.getMonth()};App._renderActivityCalendar();})()">Today</button>
+          <button onclick="App._actCalState.month++;if(App._actCalState.month>11){App._actCalState.month=0;App._actCalState.year++;}App._renderActivityCalendar()">&#8250;</button>
+        </div>
+      </div>
+      <div class="cal-grid">${dayNamesHtml}${cells}</div>
+    </div>`;
+
+    // Render selected day detail if any
+    App._renderActDayDetail();
+  },
+
+  _actDayClick(dateStr) {
+    App._actSelectedDay = App._actSelectedDay === dateStr ? null : dateStr;
+    App._renderActivityCalendar();
+  },
+
+  _renderActDayDetail() {
+    const panel = $("activity-day-detail");
+    if (!panel) return;
+    if (!App._actSelectedDay) {
+      panel.style.display = "none";
+      panel.innerHTML = "";
+      return;
+    }
+    const activities = Store.read("activities");
+    const dayActs = activities.filter(a => a.created_at && a.created_at.slice(0,10) === App._actSelectedDay);
+    const dateLabel = new Date(App._actSelectedDay + "T12:00:00").toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+
+    panel.style.display = "block";
+    panel.innerHTML = `<div class="act-day-panel">
+      <div class="act-day-panel-title">
+        <span>📅 ${sanitize(dateLabel)}</span>
+        <button class="act-day-close" onclick="App._actSelectedDay=null;App._renderActivityCalendar();">✕</button>
+      </div>
+      ${dayActs.length
+        ? `<div class="activity-list">${dayActs.map(a => App._activityRow(a)).join("")}</div>`
+        : `<div class="empty-state" style="padding:30px 20px;"><div class="empty-state-icon">💤</div><div class="empty-state-sub">No activity on this day.</div></div>`
+      }
+    </div>`;
   },
 
   /* ----------------------------------------------------------
@@ -1673,16 +2900,34 @@ async boot() {
       email:   $("lead-email").value.trim(),
       phone:   $("lead-phone").value.trim(),
       source:  $("lead-source").value,
-      notes:   $("lead-notes").value.trim()
+      notes:   $("lead-notes").value.trim(),
+      status:  "New",
+      created_at: new Date().toISOString()
     };
-    await Store.save("leads", record);
+
+    // Save lead to NocoDB and in-memory
+    const savedLead = await Store.save("leads", record);
+
+    // Auto-save to contacts (same person, same info)
+    const contactRecord = {
+      id: uid(), first_name: fname, last_name: lname,
+      company: record.company,
+      email:   record.email,
+      phone:   record.phone,
+      title:   "",
+      status:  "prospect",
+      created_at: new Date().toISOString()
+    };
+    await Store.save("contacts", contactRecord);
+
     App.logActivity({ type:"note", title:`New lead: ${fname} ${lname}`, meta: record.company });
     App.closeModal("add-lead");
-    toast("Lead saved.", "success");
+    toast("Lead saved and added to Contacts. ✅", "success");
     App.updateBadges();
-    App.renderCurrentSection();
     // Clear form
     ["lead-fname","lead-lname","lead-company","lead-email","lead-phone","lead-notes"].forEach(id => $(id).value = "");
+    // Re-render to show new record immediately
+    App.renderCurrentSection();
   },
 
   async saveContact() {
@@ -1761,15 +3006,83 @@ async boot() {
     ["quote-number","quote-customer","quote-amount","quote-desc"].forEach(id => $(id).value = "");
   },
 
+  editQuote(id) {
+    const qt = Store.read("quotes").find(q => String(q.id) === String(id));
+    if (!qt) return;
+    $("edit-quote-id").value       = qt.id;
+    $("edit-quote-number").value   = qt.number      || "";
+    $("edit-quote-customer").value = qt.customer    || "";
+    $("edit-quote-amount").value   = qt.amount      || "";
+    $("edit-quote-status").value   = qt.status      || "draft";
+    $("edit-quote-desc").value     = qt.description || "";
+    App.openModal("edit-quote");
+  },
+
+  async saveEditQuote() {
+    const id  = $("edit-quote-id").value;
+    const num = $("edit-quote-number").value.trim();
+    if (!num) { toast("Quote number is required.", "error"); return; }
+    const changes = {
+      number:      num,
+      customer:    $("edit-quote-customer").value.trim(),
+      amount:      Number($("edit-quote-amount").value) || 0,
+      status:      $("edit-quote-status").value,
+      description: $("edit-quote-desc").value.trim()
+    };
+    await Store.update("quotes", id, changes);
+    App.logActivity({ type:"quote", title:`Quote updated: ${num}`, meta: changes.customer });
+    App.closeModal("edit-quote");
+    toast("Quote updated.", "success");
+    App.renderCurrentSection();
+  },
+
+  async deleteQuote(id) {
+    if (!confirm("Delete this quote?")) return;
+    await Store.remove("quotes", id);
+    toast("Quote deleted.", "info");
+    App.renderCurrentSection();
+  },
+
+  editTask(id) {
+    const t = Store.read("tasks").find(x => String(x.id) === String(id));
+    if (!t) return;
+    $("edit-task-id").value       = t.id;
+    $("edit-task-title").value    = t.title    || "";
+    $("edit-task-related").value  = t.related  || "";
+    $("edit-task-due").value      = t.due_date || "";
+    $("edit-task-priority").value = t.priority || "low";
+    $("edit-task-status").value   = t.status   || "pending";
+    App.openModal("edit-task");
+  },
+
+  async saveEditTask() {
+    const id    = $("edit-task-id").value;
+    const title = $("edit-task-title").value.trim();
+    if (!title) { toast("Task title is required.", "error"); return; }
+    const changes = {
+      title,
+      related:  $("edit-task-related").value.trim(),
+      due_date: $("edit-task-due").value,
+      priority: $("edit-task-priority").value,
+      status:   $("edit-task-status").value
+    };
+    await Store.update("tasks", id, changes);
+    App.logActivity({ type:"task", title:`Task updated: ${title}`, meta: changes.related });
+    App.closeModal("edit-task");
+    toast("Task updated.", "success");
+    App.renderTasks();
+  },
+
   async saveTask() {
     const title = $("task-title").value.trim();
     if (!title) { toast("Task title is required.", "error"); return; }
+    const statusVal = $("task-status").value;
     const record = {
       id: uid(), title,
       related:  $("task-related").value.trim(),
       due_date: $("task-due").value,
       priority: $("task-priority").value,
-      status:   $("task-status").value
+      status:   statusVal === "completed" ? "completed" : (statusVal === "in progress" ? "in progress" : "pending")
     };
     await Store.save("tasks", record);
     App.logActivity({ type:"task", title:`Task created: ${title}`, meta: record.related });
@@ -1894,6 +3207,99 @@ document.querySelectorAll(".modal-overlay").forEach(overlay => {
       const id = overlay.id.replace("modal-","");
       App.closeModal(id);
     }
+  });
+});
+
+// Close stage picker dropdowns when clicking outside
+document.addEventListener("click", () => {
+  document.querySelectorAll(".stage-picker-dropdown.open").forEach(el => el.classList.remove("open"));
+});
+</script>
+
+<!-- ============================================================
+     MOBILE BOTTOM NAV
+============================================================ -->
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-item active" data-section="dashboard" onclick="MobileNav.go('dashboard')">
+    <span class="mn-icon">🏠</span>Dashboard
+  </button>
+  <button class="mobile-nav-item" data-section="leads" onclick="MobileNav.go('leads')">
+    <span class="mn-icon">💡</span>Leads
+  </button>
+  <button class="mobile-nav-item" data-section="deals" onclick="MobileNav.go('deals')">
+    <span class="mn-icon">🤝</span>Deals
+  </button>
+  <button class="mobile-nav-item" data-section="tasks" onclick="MobileNav.go('tasks')">
+    <span class="mn-icon">✅</span>Tasks
+  </button>
+  <button class="mobile-nav-item" id="mobile-nav-more-btn" onclick="MobileNav.toggleMore(event)">
+    <span class="mn-icon">☰</span>More
+  </button>
+</div>
+
+<div class="mobile-nav-backdrop" id="mobile-nav-backdrop" onclick="MobileNav.closeMore()"></div>
+<div class="mobile-nav-more-panel" id="mobile-nav-more-panel">
+  <div class="mobile-nav-more-item" data-section="contacts" onclick="MobileNav.go('contacts')">
+    <span class="mn-icon">👥</span> Contacts
+  </div>
+  <div class="mobile-nav-more-item" data-section="companies" onclick="MobileNav.go('companies')">
+    <span class="mn-icon">🏢</span> Companies
+  </div>
+  <div class="mobile-nav-more-item" data-section="quotes" onclick="MobileNav.go('quotes')">
+    <span class="mn-icon">📄</span> Quotes
+  </div>
+  <div class="mobile-nav-more-item" data-section="activity" onclick="MobileNav.go('activity')">
+    <span class="mn-icon">📋</span> Activity
+  </div>
+  <div class="mobile-nav-more-item" data-section="settings" onclick="MobileNav.go('settings')">
+    <span class="mn-icon">⚙️</span> Settings
+  </div>
+  <div class="mobile-nav-more-item" onclick="App.logout(); MobileNav.closeMore();">
+    <span class="mn-icon">🚪</span> Sign Out
+  </div>
+</div>
+
+<script>
+const MobileNav = {
+  go(section) {
+    this.closeMore();
+    const navItem = document.querySelector('.nav-item[data-section="' + section + '"]');
+    if (navItem) navItem.click();
+    document.querySelectorAll('.mobile-nav-item[data-section]').forEach(function(el) {
+      el.classList.toggle('active', el.dataset.section === section);
+    });
+    document.querySelectorAll('.mobile-nav-more-item[data-section]').forEach(function(el) {
+      el.classList.toggle('active', el.dataset.section === section);
+    });
+    var moreSections = ['contacts','companies','quotes','activity','settings'];
+    var moreBtn = document.getElementById('mobile-nav-more-btn');
+    if (moreBtn) moreBtn.classList.toggle('active', moreSections.includes(section));
+  },
+  toggleMore(e) {
+    e.stopPropagation();
+    var panel = document.getElementById('mobile-nav-more-panel');
+    var backdrop = document.getElementById('mobile-nav-backdrop');
+    var isOpen = panel.classList.toggle('open');
+    backdrop.classList.toggle('open', isOpen);
+  },
+  closeMore() {
+    document.getElementById('mobile-nav-more-panel').classList.remove('open');
+    document.getElementById('mobile-nav-backdrop').classList.remove('open');
+  }
+};
+
+document.querySelectorAll('.nav-item[data-section]').forEach(function(item) {
+  item.addEventListener('click', function() {
+    var section = item.dataset.section;
+    document.querySelectorAll('.mobile-nav-item[data-section]').forEach(function(el) {
+      el.classList.toggle('active', el.dataset.section === section);
+    });
+    document.querySelectorAll('.mobile-nav-more-item[data-section]').forEach(function(el) {
+      el.classList.toggle('active', el.dataset.section === section);
+    });
+    var moreSections = ['contacts','companies','quotes','activity','settings'];
+    var moreBtn = document.getElementById('mobile-nav-more-btn');
+    if (moreBtn) moreBtn.classList.toggle('active', moreSections.includes(section));
   });
 });
 </script>
