@@ -426,8 +426,7 @@
       #app.visible { flex-direction: column; }
       .main-wrap { height: 100vh; }
 
-      /* Bottom nav */
-      .mobile-nav { display: flex; }
+      /* Bottom nav shown via JS after login */
 
       /* Content area: leave room for bottom nav */
       .content-area { padding: 14px 12px; padding-bottom: 70px; }
@@ -468,8 +467,7 @@
 
       /* Login card */
       .login-card { padding: 28px 20px; }
-      /* Login page: offset for bottom nav */
-      #login-page { padding-bottom: 56px; align-items: center; }
+
 
       /* Toast */
       .toast-container { bottom: 66px; right: 10px; left: 10px; }
@@ -3160,6 +3158,7 @@ const App = {
     $("login-username").value = "";
     $("login-password").value = "";
     $("login-error").classList.remove("show");
+    var mn = document.getElementById("mobile-nav"); if (mn) mn.style.display = "none";
   }
 };
 
@@ -3189,6 +3188,7 @@ function handleLogin() {
   // Show app
   $("login-page").style.display = "none";
   $("app").classList.add("visible");
+  var mn = document.getElementById("mobile-nav"); if (mn) mn.style.display = "flex";
 
   // Boot asynchronously
   App.boot();
@@ -3307,5 +3307,3 @@ document.querySelectorAll('.nav-item[data-section]').forEach(function(item) {
 </script>
 </body>
 </html>
-rtav-crm-enhanced (1).html
-Displaying rtav-crm-enhanced (1).html.
