@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RTAV CRM</title>
+  <style>
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-dark:      #0a0a0a;
+      --bg-panel:     #111111;
+      --bg-card:      #181818;
+      --bg-hover:     #1e1e1e;
+      --bg-input:     #1a1a1a;
+      --border:       #2a2a2a;
+      --border-light: #333333;
+      --green:        #22c55e;
+      --green-dark:   #16a34a;
+      --green-dim:    #15803d;
+      --text-primary: #f0f0f0;
+      --text-secondary:#a0a0a0;
+      --text-muted:   #606060;
+      --accent-blue:  #3b82f6;
+      --accent-amber: #f59e0b;
+      --accent-red:   #ef4444;
+      --accent-purple:#a855f7;
+      --accent-cyan:  #06b6d4;
+      --sidebar-w:    240px;
+      --header-h:     56px;
+      --radius:       8px;
+      --radius-lg:    12px;
+      --shadow:       0 2px 8px rgba(0,0,0,.45);
+      --shadow-lg:    0 8px 32px rgba(0,0,0,.6);
+    }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-dark); color: var(--text-primary); font-size: 14px; line-height: 1.5; }
+
+    /* ============================================================
+       SCROLLBAR
+    ============================================================ */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+
+    /* ============================================================
+       LOGIN PAGE
+    ============================================================ */
+    #login-page {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; background: var(--bg-dark);
+      background-image: radial-gradient(ellipse at 60% 30%, rgba(34,197,94,.07) 0%, transparent 60%);
+    }
+    .login-card {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 40px 36px;
+      width: 100%; max-width: 380px; box-shadow: var(--shadow-lg);
+    }
+    .login-logo-wrap {
+      display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 28px;
+    }
+    .login-logo-img {
+      width: 80px; height: 80px; border-radius: 12px; object-fit: cover;
+      background: #000; border: 1px solid var(--border);
+    }
+    .login-logo-img-fallback {
+      width: 80px; height: 80px; border-radius: 12px;
+      background: #000; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 800; color: var(--green); letter-spacing: -1px;
+    }
+    .login-title { font-size: 22px; font-weight: 700; color: var(--text-primary); }
+    .login-subtitle { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .login-field { margin-bottom: 16px; }
+    .login-field label { display: block; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+    .login-field input {
+      width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 12px; color: var(--text-primary);
+      font-size: 14px; outline: none; transition: border-color .2s;
+    }
+    .login-field input:focus { border-color: var(--green); }
+    .login-btn {
+      width: 100%; background: var(--green); color: #000; font-weight: 700;
+      font-size: 14px; padding: 11px; border: none; border-radius: var(--radius);
+      cursor: pointer; margin-top: 6px; transition: background .2s;
+    }
+    .login-btn:hover { background: var(--green-dark); }
+    .login-error {
+      background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3);
+      color: #fca5a5; border-radius: var(--radius); padding: 8px 12px;
+      font-size: 13px; margin-bottom: 14px; display: none;
+    }
+    .login-error.show { display: block; }
+
+    /* ============================================================
+       APP SHELL
+    ============================================================ */
+    #app { display: none; height: 100vh; overflow: hidden; }
+    #app.visible { display: flex; }
+
+    /* ============================================================
+       SIDEBAR
+    ============================================================ */
+    .sidebar {
+      width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--bg-panel);
+      border-right: 1px solid var(--border); display: flex; flex-direction: column;
+      height: 100vh; overflow-y: auto; z-index: 10;
+    }
+    .sidebar-header {
+      padding: 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px; min-height: var(--header-h);
+    }
+    .sidebar-logo-img {
+      width: 34px; height: 34px; border-radius: 6px; object-fit: cover;
+      background: #000; border: 1px solid var(--border); flex-shrink: 0;
+    }
+    .sidebar-logo-fallback {
+      width: 34px; height: 34px; border-radius: 6px;
+      background: #000; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: var(--green); flex-shrink: 0;
+    }
+    .sidebar-brand { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .sidebar-brand span { color: var(--green); }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .nav-section-label { padding: 8px 16px 4px; font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 9px 16px;
+      cursor: pointer; border-radius: 0; color: var(--text-secondary);
+      font-size: 13px; font-weight: 500; transition: background .15s, color .15s;
+      text-decoration: none; user-select: none;
+    }
+    .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .nav-item.active { background: rgba(34,197,94,.1); color: var(--green); border-right: 2px solid var(--green); }
+    .nav-item .nav-icon { width: 16px; text-align: center; font-size: 15px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: var(--green); color: #000; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
+    .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--green-dim); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .sidebar-user-info { flex: 1; min-width: 0; }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar-user-role { font-size: 11px; color: var(--text-muted); }
+    .logout-btn {
+      width: 100%; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25);
+      color: #f87171; border-radius: var(--radius); padding: 8px; font-size: 12px;
+      font-weight: 600; cursor: pointer; transition: background .2s; display: flex;
+      align-items: center; justify-content: center; gap: 6px;
+    }
+    .logout-btn:hover { background: rgba(239,68,68,.2); }
+
+    /* ============================================================
+       MAIN CONTENT
+    ============================================================ */
+    .main-wrap { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+    .topbar {
+      height: var(--header-h); background: var(--bg-panel); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 20px; gap: 12px; flex-shrink: 0;
+    }
+    .topbar-title { font-size: 16px; font-weight: 700; color: var(--text-primary); flex-shrink: 0; }
+    .search-wrap { flex: 1; max-width: 360px; position: relative; }
+    .search-wrap input {
+      width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 7px 12px 7px 34px; color: var(--text-primary);
+      font-size: 13px; outline: none; transition: border-color .2s;
+    }
+    .search-wrap input:focus { border-color: var(--green); }
+    .search-wrap .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px; pointer-events: none; }
+    .topbar-actions { margin-left: auto; display: flex; gap: 8px; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: background .2s, color .2s; }
+    .btn-primary { background: var(--green); color: #000; }
+    .btn-primary:hover { background: var(--green-dark); }
+    .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--bg-hover); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    .btn-danger { background: rgba(239,68,68,.1); color: #f87171; border: 1px solid rgba(239,68,68,.25); }
+    .btn-danger:hover { background: rgba(239,68,68,.2); }
+
+    .content-area { flex: 1; overflow-y: auto; padding: 20px; }
+
+    /* ============================================================
+       CARDS & SECTIONS
+    ============================================================ */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .stat-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 16px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .stat-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+    .stat-value { font-size: 26px; font-weight: 700; color: var(--text-primary); }
+    .stat-sub { font-size: 12px; color: var(--text-secondary); }
+    .stat-icon { font-size: 20px; margin-bottom: 2px; }
+
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    .card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+    .card-body { padding: 16px 18px; }
+
+    /* ============================================================
+       TABLE
+    ============================================================ */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .12s; cursor: pointer; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--bg-hover); }
+    tbody td { padding: 11px 14px; font-size: 13px; color: var(--text-primary); }
+    .td-muted { color: var(--text-secondary) !important; font-size: 12px !important; }
+    .td-sub { display: block; font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+    /* ============================================================
+       BADGES
+    ============================================================ */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-green  { background: rgba(34,197,94,.15);  color: #4ade80; }
+    .badge-blue   { background: rgba(59,130,246,.15); color: #60a5fa; }
+    .badge-amber  { background: rgba(245,158,11,.15); color: #fbbf24; }
+    .badge-red    { background: rgba(239,68,68,.15);  color: #f87171; }
+    .badge-purple { background: rgba(168,85,247,.15); color: #c084fc; }
+    .badge-cyan   { background: rgba(6,182,212,.15);  color: #22d3ee; }
+    .badge-gray   { background: rgba(100,116,139,.15);color: #94a3b8; }
+
+    /* ============================================================
+       PIPELINE / DEALS BOARD
+    ============================================================ */
+    .pipeline-controls { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+    .view-toggle { display: flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .view-toggle-btn { padding: 6px 12px; background: none; border: none; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s, color .15s; display: flex; align-items: center; gap: 4px; }
+    .view-toggle-btn.active { background: var(--bg-hover); color: var(--text-primary); }
+    .view-toggle-btn + .view-toggle-btn { border-left: 1px solid var(--border); }
+
+    .board-scroll { overflow-x: auto; padding-bottom: 12px; }
+    .board { display: flex; gap: 14px; min-width: max-content; }
+    .board-col { width: 260px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); display: flex; flex-direction: column; max-height: calc(100vh - 220px); }
+    .board-col-header { padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .board-col-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+    .board-col-count { font-size: 11px; color: var(--text-muted); background: var(--bg-hover); padding: 1px 7px; border-radius: 10px; }
+    .board-col-body { padding: 10px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .board-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; cursor: pointer; transition: border-color .15s, transform .1s; }
+    .board-card:hover { border-color: var(--border-light); transform: translateY(-1px); }
+    .board-card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .board-card-company { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
+    .board-card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .board-card-value { font-size: 12px; font-weight: 700; color: var(--green); }
+    .board-card-date { font-size: 11px; color: var(--text-muted); }
+
+    /* deals list view */
+    .deals-list-view { display: none; }
+    .deals-list-view.active { display: block; }
+    .deals-board-view { display: block; }
+    .deals-board-view.hidden { display: none; }
+
+    /* ============================================================
+       ACTIVITY FEED
+    ============================================================ */
+    .activity-list { display: flex; flex-direction: column; gap: 0; }
+    .activity-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .activity-dot-green  { background: var(--green); }
+    .activity-dot-blue   { background: var(--accent-blue); }
+    .activity-dot-amber  { background: var(--accent-amber); }
+    .activity-dot-red    { background: var(--accent-red); }
+    .activity-dot-purple { background: var(--accent-purple); }
+    .activity-content { flex: 1; min-width: 0; }
+    .activity-title { font-size: 13px; color: var(--text-primary); font-weight: 500; }
+    .activity-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .activity-note { font-size: 12px; color: var(--text-secondary); margin-top: 4px; background: var(--bg-input); padding: 6px 10px; border-radius: 6px; border-left: 2px solid var(--border-light); }
+
+    /* ============================================================
+       LEADS SECTION
+    ============================================================ */
+    .leads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .lead-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; cursor: pointer; transition: border-color .15s; }
+    .lead-card:hover { border-color: var(--border-light); }
+    .lead-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+    .lead-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+    .lead-company { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .lead-source { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+    .lead-source span { color: var(--green); font-weight: 600; }
+
+    /* ============================================================
+       MODAL
+    ============================================================ */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.65);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg);
+      width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+      box-shadow: var(--shadow-lg); transform: translateY(10px); transition: transform .2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .modal-close { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+    .modal-close:hover { color: var(--text-primary); background: var(--bg-hover); }
+    .modal-body { padding: 20px; }
+    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+    /* ============================================================
+       FORM
+    ============================================================ */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+    .form-control {
+      width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 9px 12px; color: var(--text-primary);
+      font-size: 13px; outline: none; transition: border-color .2s;
+    }
+    .form-control:focus { border-color: var(--green); }
+    select.form-control { cursor: pointer; }
+    textarea.form-control { resize: vertical; min-height: 80px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ============================================================
+       TOAST
+    ============================================================ */
+    .toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 2000; }
+    .toast {
+      background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius);
+      padding: 10px 16px; font-size: 13px; color: var(--text-primary);
+      box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 8px;
+      animation: slideIn .25s ease; min-width: 220px; max-width: 340px;
+    }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error   { border-left: 3px solid var(--accent-red); }
+    .toast.info    { border-left: 3px solid var(--accent-blue); }
+    @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ============================================================
+       DETAIL PANEL (contact / deal)
+    ============================================================ */
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .detail-field { background: var(--bg-input); border-radius: var(--radius); padding: 10px 12px; }
+    .detail-field-label { font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+    .detail-field-value { font-size: 13px; color: var(--text-primary); }
+
+    /* ============================================================
+       EMPTY STATE
+    ============================================================ */
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-state-title { font-size: 15px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+    .empty-state-sub { font-size: 13px; }
+
+    /* ============================================================
+       SETTINGS / USERS
+    ============================================================ */
+    .settings-section { margin-bottom: 28px; }
+    .settings-section-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .user-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; }
+    .user-row-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green-dim); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0; }
+    .user-row-info { flex: 1; }
+    .user-row-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .user-row-role { font-size: 11px; color: var(--text-muted); }
+    .user-row-actions { display: flex; gap: 6px; }
+
+    /* ============================================================
+       PIPELINE STAGE COLORS
+    ============================================================ */
+    .stage-new      { color: #94a3b8; }
+    .stage-prospect { color: var(--accent-blue); }
+    .stage-proposal { color: var(--accent-amber); }
+    .stage-negotiate{ color: var(--accent-purple); }
+    .stage-won      { color: var(--green); }
+    .stage-lost     { color: var(--accent-red); }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    /* loading spinner */
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border-light); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-overlay { position: fixed; inset: 0; background: var(--bg-dark); display: flex; align-items: center; justify-content: center; z-index: 3000; flex-direction: column; gap: 12px; }
+    .loading-overlay.hidden { display: none; }
+    .loading-text { color: var(--text-secondary); font-size: 14px; }
+
+    /* tag */
+    .tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 500; background: var(--bg-hover); color: var(--text-secondary); border: 1px solid var(--border); margin: 2px; }
+
+    /* progress bar */
+    .progress-bar-wrap { background: var(--border); border-radius: 4px; height: 6px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; border-radius: 4px; background: var(--green); transition: width .4s; }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOADING OVERLAY
+============================================================ -->
+<div class="loading-overlay hidden" id="loading-overlay">
+  <div class="spinner" style="width:32px;height:32px;border-width:3px;"></div>
+  <div class="loading-text">Connecting to server…</div>
+</div>
+
+<!-- ============================================================
+     TOAST CONTAINER
+============================================================ -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ============================================================
+     LOGIN PAGE
+============================================================ -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-logo-wrap">
+      <img id="login-logo" src="rtav-logo.jpg" alt="RTAV Logo" class="login-logo-img"
+           onerror="this.style.display='none';document.getElementById('login-logo-fallback').style.display='flex';" />
+      <div id="login-logo-fallback" class="login-logo-img-fallback" style="display:none;">RT<span style="color:#4ade80;">AV</span></div>
+      <div>
+        <div class="login-title">RTAV CRM</div>
+        <div class="login-subtitle">Audio Visual Integration · Sign in to continue</div>
+      </div>
+    </div>
+    <div class="login-error" id="login-error">Invalid username or password.</div>
+    <div class="login-field">
+      <label for="login-username">Username</label>
+      <input type="text" id="login-username" placeholder="Enter username" autocomplete="username" />
+    </div>
+    <div class="login-field">
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" placeholder="Enter password" autocomplete="current-password" />
+    </div>
+    <button class="login-btn" id="login-btn">Sign In</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     APP SHELL
+============================================================ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <img id="sidebar-logo" src="rtav-logo.jpg" alt="RTAV" class="sidebar-logo-img"
+           onerror="this.style.display='none';document.getElementById('sidebar-logo-fallback').style.display='flex';" />
+      <div id="sidebar-logo-fallback" class="sidebar-logo-fallback" style="display:none;">RT</div>
+      <div class="sidebar-brand">RT<span>AV</span> CRM</div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item active" data-section="dashboard">
+        <span class="nav-icon">🏠</span> Dashboard
+      </div>
+      <div class="nav-item" data-section="leads">
+        <span class="nav-icon">💡</span> Leads
+        <span class="nav-badge" id="nav-leads-count">0</span>
+      </div>
+      <div class="nav-item" data-section="contacts">
+        <span class="nav-icon">👥</span> Contacts
+      </div>
+      <div class="nav-item" data-section="companies">
+        <span class="nav-icon">🏢</span> Companies
+      </div>
+      <div class="nav-section-label">Sales</div>
+      <div class="nav-item" data-section="deals">
+        <span class="nav-icon">🤝</span> Deals
+        <span class="nav-badge" id="nav-deals-count">0</span>
+      </div>
+      <div class="nav-item" data-section="quotes">
+        <span class="nav-icon">📄</span> Quotes
+      </div>
+      <div class="nav-section-label">Management</div>
+      <div class="nav-item" data-section="tasks">
+        <span class="nav-icon">✅</span> Tasks
+      </div>
+      <div class="nav-item" data-section="activity">
+        <span class="nav-icon">📋</span> Activity
+      </div>
+      <div class="nav-item" data-section="settings">
+        <span class="nav-icon">⚙️</span> Settings
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebar-username-display">User</div>
+          <div class="sidebar-user-role">CRM Agent</div>
+        </div>
+      </div>
+      <button class="logout-btn" id="logout-btn">
+        <span>🚪</span> Sign Out
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN WRAP -->
+  <div class="main-wrap">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="global-search" placeholder="Search…" autocomplete="off" />
+      </div>
+      <div class="topbar-actions" id="topbar-actions"></div>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="content-area">
+
+      <!-- ======================================================
+           DASHBOARD SECTION
+      ====================================================== -->
+      <div class="section active" id="section-dashboard">
+        <div class="stats-grid" id="dash-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Recent Activity</span>
+              <span class="badge badge-gray" style="font-size:10px;">Live</span>
+            </div>
+            <div class="card-body">
+              <div class="activity-list" id="dash-activity"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Deals Pipeline</span></div>
+            <div class="card-body" id="dash-pipeline"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================
+           LEADS SECTION
+      ====================================================== -->
+      <div class="section" id="section-leads">
+        <div class="leads-grid" id="leads-grid"></div>
+      </div>
+
+      <!-- ======================================================
+           CONTACTS SECTION
+      ====================================================== -->
+      <div class="section" id="section-contacts">
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <div class="table-wrap">
+              <table id="contacts-table">
+                <thead>
+                  <tr>
+                    <th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="contacts-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================
+           COMPANIES SECTION
+      ====================================================== -->
+      <div class="section" id="section-companies">
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <div class="table-wrap">
+              <table id="companies-table">
+                <thead>
+                  <tr>
+                    <th>Company</th><th>Industry</th><th>City</th><th>Contacts</th><th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody id="companies-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================
+           DEALS SECTION (renamed from Pipeline)
+      ====================================================== -->
+      <div class="section" id="section-deals">
+        <div class="pipeline-controls">
+          <div class="view-toggle">
+            <button class="view-toggle-btn active" id="deals-board-btn" onclick="App.setDealsView('board')">
+              <span>⊞</span> Board
+            </button>
+            <button class="view-toggle-btn" id="deals-list-btn" onclick="App.setDealsView('list')">
+              <span>☰</span> List
+            </button>
+          </div>
+          <span id="deals-stage-filter-wrap" style="display:flex;gap:6px;flex-wrap:wrap;"></span>
+        </div>
+        <div class="deals-board-view" id="deals-board-view">
+          <div class="board-scroll"><div class="board" id="deals-board"></div></div>
+        </div>
+        <div class="deals-list-view" id="deals-list-view">
+          <div class="card">
+            <div class="card-body" style="padding:0;">
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Deal</th><th>Company</th><th>Stage</th><th>Value</th><th>Close Date</th><th>Owner</th></tr></thead>
+                  <tbody id="deals-list-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================
+           QUOTES SECTION
+      ====================================================== -->
+      <div class="section" id="section-quotes">
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Quote #</th><th>Customer</th><th>Amount</th><th>Status</th><th>Sent</th></tr></thead>
+                <tbody id="quotes-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================
+           TASKS SECTION
+      ====================================================== -->
+      <div class="section" id="section-tasks">
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Task</th><th>Related To</th><th>Due</th><th>Priority</th><th>Status</th></tr></thead>
+                <tbody id="tasks-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================
+           ACTIVITY SECTION
+      ====================================================== -->
+      <div class="section" id="section-activity">
+        <div class="card">
+          <div class="card-header"><span class="card-title">All Activity</span></div>
+          <div class="card-body">
+            <div class="activity-list" id="activity-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================
+           SETTINGS SECTION
+      ====================================================== -->
+      <div class="section" id="section-settings">
+        <div class="settings-section">
+          <div class="settings-section-title">👤 CRM Users & Access</div>
+          <div id="users-list"></div>
+          <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="App.openModal('add-user')">
+            + Add User
+          </button>
+        </div>
+        <div class="settings-section">
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /main-wrap -->
+</div><!-- /app -->
+
+<!-- ============================================================
+     MODALS
+============================================================ -->
+
+<!-- Add Lead -->
+<div class="modal-overlay" id="modal-add-lead">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Lead</span>
+      <button class="modal-close" onclick="App.closeModal('add-lead')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-control" id="lead-fname" placeholder="Jane" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-control" id="lead-lname" placeholder="Smith" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company</label>
+        <input class="form-control" id="lead-company" placeholder="Acme Corp" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" id="lead-email" type="email" placeholder="jane@example.com" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" id="lead-phone" placeholder="+1 555 0000" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Source</label>
+          <select class="form-control" id="lead-source">
+            <option value="Referral">Referral</option>
+            <option value="Trade Show">Trade Show</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Email Campaign">Email Campaign</option>
+            <option value="Partner">Partner</option>
+            <option value="Webinar">Webinar</option>
+            <option value="Website">Website</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="lead-notes" placeholder="Initial notes…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('add-lead')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveLead()">Save Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Contact -->
+<div class="modal-overlay" id="modal-add-contact">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Contact</span>
+      <button class="modal-close" onclick="App.closeModal('add-contact')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-control" id="contact-fname" placeholder="Jane" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-control" id="contact-lname" placeholder="Smith" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company</label>
+        <input class="form-control" id="contact-company" placeholder="Acme Corp" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-control" id="contact-email" type="email" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" id="contact-phone" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input class="form-control" id="contact-title" placeholder="AV Director" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-control" id="contact-status">
+          <option value="active">Active</option>
+          <option value="prospect">Prospect</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('add-contact')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveContact()">Save Contact</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Company -->
+<div class="modal-overlay" id="modal-add-company">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Company</span>
+      <button class="modal-close" onclick="App.closeModal('add-company')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Company Name</label>
+        <input class="form-control" id="co-name" placeholder="Acme Corp" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Industry</label>
+          <input class="form-control" id="co-industry" placeholder="Technology" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input class="form-control" id="co-city" placeholder="New York" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Annual Revenue</label>
+          <input class="form-control" id="co-revenue" placeholder="$5M" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Employees</label>
+          <input class="form-control" id="co-employees" type="number" placeholder="50" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Website</label>
+        <input class="form-control" id="co-website" placeholder="[example.com](https://example.com)" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('add-company')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveCompany()">Save Company</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Deal -->
+<div class="modal-overlay" id="modal-add-deal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Deal</span>
+      <button class="modal-close" onclick="App.closeModal('add-deal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Deal Name</label>
+        <input class="form-control" id="deal-name" placeholder="Boardroom AV Upgrade" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company</label>
+        <input class="form-control" id="deal-company" placeholder="Acme Corp" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Value ($)</label>
+          <input class="form-control" id="deal-value" type="number" placeholder="50000" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stage</label>
+          <select class="form-control" id="deal-stage">
+            <option value="new deals">New Deals</option>
+            <option value="prospect">Prospect</option>
+            <option value="proposal">Proposal</option>
+            <option value="negotiation">Negotiation</option>
+            <option value="won">Won</option>
+            <option value="lost">Lost</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Close Date</label>
+          <input class="form-control" id="deal-close" type="date" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Owner</label>
+          <input class="form-control" id="deal-owner" placeholder="Priya Patel" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="deal-notes" placeholder="Deal notes…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('add-deal')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveDeal()">Save Deal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Quote -->
+<div class="modal-overlay" id="modal-add-quote">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Quote</span>
+      <button class="modal-close" onclick="App.closeModal('add-quote')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Quote Number</label>
+          <input class="form-control" id="quote-number" placeholder="2026-0050" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Customer</label>
+          <input class="form-control" id="quote-customer" placeholder="Company Name" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Amount ($)</label>
+          <input class="form-control" id="quote-amount" type="number" placeholder="75000" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-control" id="quote-status">
+            <option value="draft">Draft</option>
+            <option value="sent">Sent</option>
+            <option value="accepted">Accepted</option>
+            <option value="declined">Declined</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" id="quote-desc" placeholder="Scope of work…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('add-quote')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveQuote()">Save Quote</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Task -->
+<div class="modal-overlay" id="modal-add-task">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Task</span>
+      <button class="modal-close" onclick="App.closeModal('add-task')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Task Title</label>
+        <input class="form-control" id="task-title" placeholder="Follow up with client" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Related To</label>
+        <input class="form-control" id="task-related" placeholder="Company / Deal name" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input class="form-control" id="task-due" type="date" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-control" id="task-priority">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-control" id="task-status">
+          <option value="pending">Pending</option>
+          <option value="in progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('add-task')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveTask()">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add User -->
+<div class="modal-overlay" id="modal-add-user">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New User</span>
+      <button class="modal-close" onclick="App.closeModal('add-user')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-control" id="new-user-username" placeholder="johndoe" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-control" id="new-user-password" type="password" placeholder="Enter password" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Display Name</label>
+        <input class="form-control" id="new-user-display" placeholder="John Doe" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('add-user')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveUser()">Add User</button>
+    </div>
+  </div>
+</div>
+
+<!-- Item Detail Modal -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <span class="modal-title" id="detail-modal-title">Details</span>
+      <button class="modal-close" onclick="App.closeModal('detail')">✕</button>
+    </div>
+    <div class="modal-body" id="detail-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('detail')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+"use strict";
+
+/* ============================================================
+   CONSTANTS
+============================================================ */
+const API_BASE_URL = "https://ba81-103-181-223-146.ngrok-free.app/api";
+const SYSTEM_API_SECRET_KEY = "your_32_character_security_key_here";
+
+const TENANT_ID = "77777777-7777-7777-7777-777777777777";
+const OWNER_ID  = "11111111-1111-1111-1111-111111111111";
+
+/* ============================================================
+   ACCESS CONTROL — seeded users (never persisted to localStorage)
+   Format: { username (lowercase key): { password, display } }
+============================================================ */
+let ACCESS_LIST = {
+  "tristan":    { password: "3058",  display: "Tristan" },
+  "rohan":      { password: "RTAV",  display: "Rohan" },
+  "roshan":     { password: "1234",  display: "Roshan" },
+  "mahalaxmi":  { password: "1234",  display: "Mahalaxmi" }
+};
+
+/* ============================================================
+   STORE — async engine backed by fetch()
+   Falls back to in-memory state when server is unreachable
+============================================================ */
+const Store = (() => {
+  // In-memory state (empty boot)
+  const _mem = {
+    leads:     [],
+    contacts:  [],
+    companies: [],
+    deals:     [],
+    quotes:    [],
+    tasks:     [],
+    activities:[]
+  };
+
+  const COLLECTIONS = Object.keys(_mem);
+
+  /**
+   * Fetch a single collection from the server.
+   * On network error, returns the current in-memory array.
+   */
+  async function _fetchCollection(name) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/${name}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json", "x-api-key": SYSTEM_API_SECRET_KEY }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      // Accept array directly or { data: [] } shape
+      const arr = Array.isArray(data) ? data : (data.data || data.items || []);
+      _mem[name] = arr;
+      return arr;
+    } catch {
+      return _mem[name];
+    }
+  }
+
+  /**
+   * Boot: fire Promise.all across all endpoints and return structured collection.
+   */
+  async function get() {
+    const results = await Promise.all(COLLECTIONS.map(c => _fetchCollection(c)));
+    const out = {};
+    COLLECTIONS.forEach((c, i) => { out[c] = results[i]; });
+    return out;
+  }
+
+  /**
+   * Save a record to a collection via POST.
+   * Injects tenant_id and owner_id tracking params.
+   * Stores to in-memory on success or failure.
+   */
+  async function save(collectionName, record) {
+    const payload = {
+      ...record,
+      tenant_id: TENANT_ID,
+      owner_id:  OWNER_ID,
+      created_at: record.created_at || new Date().toISOString()
+    };
+
+    // Optimistically update in-memory
+    if (!_mem[collectionName]) _mem[collectionName] = [];
+    _mem[collectionName].push(payload);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/${collectionName}`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": SYSTEM_API_SECRET_KEY },
+        body:    JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const saved = await res.json();
+      // Replace the in-memory optimistic entry with server response
+      const idx = _mem[collectionName].findIndex(r => r === payload);
+      if (idx >= 0) _mem[collectionName][idx] = saved;
+      return saved;
+    } catch {
+      // Keep optimistic record
+      return payload;
+    }
+  }
+
+  /**
+   * Delete a record by id from a collection via DELETE.
+   */
+  async function remove(collectionName, id) {
+    _mem[collectionName] = (_mem[collectionName] || []).filter(r => r.id !== id);
+    try {
+      await fetch(`${API_BASE_URL}/${collectionName}/${id}`, { method: "DELETE", headers: { "x-api-key": SYSTEM_API_SECRET_KEY } });
+    } catch { /* silent */ }
+  }
+
+  /** Direct in-memory read (no server fetch) */
+  function read(collectionName) {
+    return _mem[collectionName] || [];
+  }
+
+  /** Seed in-memory state with server data */
+  function seed(data) {
+    Object.keys(data).forEach(k => { if (_mem[k] !== undefined) _mem[k] = data[k]; });
+  }
+
+  return { get, save, remove, read, seed };
+})();
+
+/* ============================================================
+   UTILITIES
+============================================================ */
+const $ = id => document.getElementById(id);
+const fmt$ = n => new Intl.NumberFormat("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 }).format(n || 0);
+const fmtDate = d => d ? new Date(d).toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" }) : "—";
+const uid = () => Math.random().toString(36).slice(2, 10);
+
+function toast(msg, type = "success") {
+  const c = $("toast-container");
+  const el = document.createElement("div");
+  el.className = `toast ${type}`;
+  const icons = { success:"✅", error:"❌", info:"ℹ️" };
+  el.innerHTML = `<span>${icons[type]||"ℹ️"}</span><span>${msg}</span>`;
+  c.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+function sanitize(str) {
+  const d = document.createElement("div");
+  d.textContent = String(str || "");
+  return d.innerHTML;
+}
+
+/* ============================================================
+   SESSION
+============================================================ */
+let currentUser = null;
+
+function setSession(user) {
+  currentUser = user;
+}
+
+function clearSession() {
+  currentUser = null;
+}
+
+/* ============================================================
+   APP OBJECT
+============================================================ */
+const App = {
+
+  _currentSection: "dashboard",
+  _dealsView: "board",
+  _searchQuery: "",
+
+  /* ----------------------------------------------------------
+     BOOT
+  ---------------------------------------------------------- */
+async boot() {
+    // Show loading
+    $("loading-overlay").classList.remove("hidden");
+
+    // Never keep stale demo/localStorage state. Always re-sync from server.
+    try {
+      const data = await Store.get();
+      Store.seed(data);
+    } catch (e) {
+      // Server unavailable — start with empty state
+      // (but do not overwrite once we have valid server data)
+    }
+
+    $("loading-overlay").classList.add("hidden");
+
+
+    // Wire navigation
+    document.querySelectorAll(".nav-item").forEach(el => {
+      el.addEventListener("click", () => {
+        const sec = el.dataset.section;
+        if (sec) App.navigateTo(sec);
+      });
+    });
+
+    // Wire logout
+    $("logout-btn").addEventListener("click", App.logout);
+
+    // Wire search
+    $("global-search").addEventListener("input", e => {
+      App._searchQuery = e.target.value.trim().toLowerCase();
+      App.renderCurrentSection();
+    });
+
+    // Update nav badges
+    App.updateBadges();
+
+    // Render dashboard
+    App.navigateTo("dashboard");
+  },
+
+  /* ----------------------------------------------------------
+     NAVIGATION
+  ---------------------------------------------------------- */
+  navigateTo(section) {
+    App._currentSection = section;
+    App._searchQuery = "";
+    $("global-search").value = "";
+
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+
+    const el = $(`section-${section}`);
+    if (el) el.classList.add("active");
+
+    const nav = document.querySelector(`.nav-item[data-section="${section}"]`);
+    if (nav) nav.classList.add("active");
+
+    const titles = {
+      dashboard:"Dashboard", leads:"Leads", contacts:"Contacts",
+      companies:"Companies", deals:"Deals", quotes:"Quotes",
+      tasks:"Tasks", activity:"Activity", settings:"Settings"
+    };
+    $("topbar-title").textContent = titles[section] || section;
+
+    App.renderTopbarActions(section);
+    App.renderCurrentSection();
+  },
+
+  renderCurrentSection() {
+    const s = App._currentSection;
+    if (s === "dashboard")  App.renderDashboard();
+    if (s === "leads")      App.renderLeads();
+    if (s === "contacts")   App.renderContacts();
+    if (s === "companies")  App.renderCompanies();
+    if (s === "deals")      App.renderDeals();
+    if (s === "quotes")     App.renderQuotes();
+    if (s === "tasks")      App.renderTasks();
+    if (s === "activity")   App.renderActivity();
+    if (s === "settings")   App.renderSettings();
+  },
+
+  renderTopbarActions(section) {
+    const wrap = $("topbar-actions");
+    const map = {
+      leads:    `<button class="btn btn-primary btn-sm" onclick="App.openModal('add-lead')">+ Add Lead</button>`,
+      contacts: `<button class="btn btn-primary btn-sm" onclick="App.openModal('add-contact')">+ Add Contact</button>`,
+      companies:`<button class="btn btn-primary btn-sm" onclick="App.openModal('add-company')">+ Add Company</button>`,
+      deals:    `<button class="btn btn-primary btn-sm" onclick="App.openModal('add-deal')">+ Add Deal</button>`,
+      quotes:   `<button class="btn btn-primary btn-sm" onclick="App.openModal('add-quote')">+ Add Quote</button>`,
+      tasks:    `<button class="btn btn-primary btn-sm" onclick="App.openModal('add-task')">+ Add Task</button>`
+    };
+    wrap.innerHTML = map[section] || "";
+  },
+
+  updateBadges() {
+    $("nav-leads-count").textContent = Store.read("leads").length;
+    $("nav-deals-count").textContent = Store.read("deals").filter(d => !["won","lost"].includes(d.stage)).length;
+  },
+
+  /* ----------------------------------------------------------
+     DASHBOARD
+  ---------------------------------------------------------- */
+  renderDashboard() {
+    const leads     = Store.read("leads");
+    const deals     = Store.read("deals");
+    const contacts  = Store.read("contacts");
+    const quotes    = Store.read("quotes");
+    const tasks     = Store.read("tasks");
+    const activities= Store.read("activities");
+
+    const openDeals = deals.filter(d => !["won","lost"].includes(d.stage));
+    const totalPipeline = openDeals.reduce((s, d) => s + (Number(d.value) || 0), 0);
+    const wonDeals  = deals.filter(d => d.stage === "won");
+    const wonValue  = wonDeals.reduce((s, d) => s + (Number(d.value) || 0), 0);
+    const pendingTasks = tasks.filter(t => t.status !== "completed").length;
+
+    $("dash-stats").innerHTML = `
+      <div class="stat-card"><div class="stat-icon">💡</div><div class="stat-label">Total Leads</div><div class="stat-value">${leads.length}</div><div class="stat-sub">All sources</div></div>
+      <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-label">Contacts</div><div class="stat-value">${contacts.length}</div><div class="stat-sub">In CRM</div></div>
+      <div class="stat-card"><div class="stat-icon">🤝</div><div class="stat-label">Open Deals</div><div class="stat-value">${openDeals.length}</div><div class="stat-sub">${fmt$(totalPipeline)} pipeline</div></div>
+      <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-label">Won Deals</div><div class="stat-value">${wonDeals.length}</div><div class="stat-sub">${fmt$(wonValue)} closed</div></div>
+      <div class="stat-card"><div class="stat-icon">📄</div><div class="stat-label">Quotes</div><div class="stat-value">${quotes.length}</div><div class="stat-sub">Sent &amp; draft</div></div>
+      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">Pending Tasks</div><div class="stat-value">${pendingTasks}</div><div class="stat-sub">Open items</div></div>
+    `;
+
+    // Activity feed
+    const actItems = [...activities].reverse().slice(0, 8);
+    $("dash-activity").innerHTML = actItems.length
+      ? actItems.map(a => App._activityRow(a)).join("")
+      : `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-sub">No recent activity</div></div>`;
+
+    // Pipeline summary
+    const STAGES = ["new deals","prospect","proposal","negotiation","won","lost"];
+    const stageCounts = {};
+    STAGES.forEach(s => { stageCounts[s] = deals.filter(d => d.stage === s).length; });
+    const max = Math.max(1, ...Object.values(stageCounts));
+    $("dash-pipeline").innerHTML = STAGES.map(s => `
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span style="font-size:12px;text-transform:capitalize;color:var(--text-secondary);">${s}</span>
+          <span style="font-size:12px;font-weight:700;color:var(--text-primary);">${stageCounts[s]}</span>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${(stageCounts[s]/max)*100}%;"></div></div>
+      </div>
+    `).join("");
+  },
+
+  _activityRow(a) {
+    const dotColors = { note:"green", quote:"blue", task:"amber", email:"purple", call:"cyan", default:"gray" };
+    const color = dotColors[a.type] || dotColors.default;
+    return `
+      <div class="activity-item">
+        <div class="activity-dot activity-dot-${color}"></div>
+        <div class="activity-content">
+          <div class="activity-title">${sanitize(a.title || "Activity")}</div>
+          <div class="activity-meta">${sanitize(a.meta || "")} ${a.created_at ? "· " + fmtDate(a.created_at) : ""}</div>
+          ${a.note ? `<div class="activity-note">${sanitize(a.note)}</div>` : ""}
+        </div>
+      </div>`;
+  },
+
+  /* ----------------------------------------------------------
+     LEADS
+  ---------------------------------------------------------- */
+  renderLeads() {
+    const q   = App._searchQuery;
+    let items = Store.read("leads");
+    if (q) items = items.filter(l =>
+      [l.first_name, l.last_name, l.company, l.email, l.source]
+        .join(" ").toLowerCase().includes(q)
+    );
+    const grid = $("leads-grid");
+    if (!items.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">💡</div><div class="empty-state-title">No leads found</div><div class="empty-state-sub">${q ? "Try a different search." : "Add your first lead."}</div></div>`;
+      return;
+    }
+    const sourceBadge = s => {
+      const map = { Referral:"green", LinkedIn:"blue", "Trade Show":"amber", Webinar:"purple", Partner:"cyan", "Email Campaign":"red" };
+      const c = map[s] || "gray";
+      return `<span class="badge badge-${c}">${sanitize(s)}</span>`;
+    };
+    grid.innerHTML = items.map(l => `
+      <div class="lead-card" onclick="App.showDetail('lead', '${l.id}')">
+        <div class="lead-card-header">
+          <div>
+            <div class="lead-name">${sanitize(l.first_name||"")} ${sanitize(l.last_name||"")}</div>
+            <div class="lead-company">${sanitize(l.company||"")}</div>
+          </div>
+          ${sourceBadge(l.source||"Other")}
+        </div>
+        ${l.email ? `<div class="lead-source">📧 <span>${sanitize(l.email)}</span></div>` : ""}
+        ${l.phone ? `<div class="lead-source">📞 <span>${sanitize(l.phone)}</span></div>` : ""}
+        ${l.notes ? `<div class="activity-note" style="margin-top:8px;">${sanitize(l.notes)}</div>` : ""}
+        <div class="lead-source" style="margin-top:8px;">Added ${fmtDate(l.created_at)}</div>
+      </div>
+    `).join("");
+  },
+
+  /* ----------------------------------------------------------
+     CONTACTS
+  ---------------------------------------------------------- */
+  renderContacts() {
+    const q     = App._searchQuery;
+    let items   = Store.read("contacts");
+    if (q) items = items.filter(c =>
+      [c.first_name, c.last_name, c.company, c.email].join(" ").toLowerCase().includes(q)
+    );
+    const tbody = $("contacts-tbody");
+    if (!items.length) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">No contacts</div></div></td></tr>`;
+      return;
+    }
+    const statusBadge = s => {
+      const m = { active:"green", prospect:"blue", inactive:"gray" };
+      return `<span class="badge badge-${m[s]||"gray"}">${sanitize(s)}</span>`;
+    };
+    tbody.innerHTML = items.map(c => `
+      <tr onclick="App.showDetail('contact', '${c.id}')">
+        <td><strong>${sanitize(c.first_name||"")} ${sanitize(c.last_name||"")}</strong><span class="td-sub">${sanitize(c.title||"")}</span></td>
+        <td>${sanitize(c.company||"—")}</td>
+        <td class="td-muted">${sanitize(c.email||"—")}</td>
+        <td class="td-muted">${sanitize(c.phone||"—")}</td>
+        <td>${statusBadge(c.status||"active")}</td>
+      </tr>`).join("");
+  },
+
+  /* ----------------------------------------------------------
+     COMPANIES
+  ---------------------------------------------------------- */
+  renderCompanies() {
+    const q     = App._searchQuery;
+    let items   = Store.read("companies");
+    if (q) items = items.filter(c =>
+      [c.name, c.industry, c.city].join(" ").toLowerCase().includes(q)
+    );
+    const tbody = $("companies-tbody");
+    if (!items.length) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">🏢</div><div class="empty-state-title">No companies</div></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = items.map(c => `
+      <tr onclick="App.showDetail('company', '${c.id}')">
+        <td><strong>${sanitize(c.name||"")}</strong>${c.website ? `<span class="td-sub">${sanitize(c.website)}</span>` : ""}</td>
+        <td>${sanitize(c.industry||"—")}</td>
+        <td class="td-muted">${sanitize(c.city||"—")}</td>
+        <td class="td-muted">${c.employees ? sanitize(c.employees) : "—"}</td>
+        <td>${c.revenue ? sanitize(c.revenue) : "—"}</td>
+      </tr>`).join("");
+  },
+
+  /* ----------------------------------------------------------
+     DEALS  (renamed from Pipeline; new deals = qualification)
+  ---------------------------------------------------------- */
+  DEAL_STAGES: [
+    { key:"new deals",    label:"New Deals",    color:"#94a3b8" },
+    { key:"prospect",     label:"Prospect",     color:"#3b82f6" },
+    { key:"proposal",     label:"Proposal",     color:"#f59e0b" },
+    { key:"negotiation",  label:"Negotiation",  color:"#a855f7" },
+    { key:"won",          label:"Won",          color:"#22c55e" },
+    { key:"lost",         label:"Lost",         color:"#ef4444" }
+  ],
+
+  renderDeals() {
+    const q    = App._searchQuery;
+    let items  = Store.read("deals");
+    if (q) items = items.filter(d =>
+      [d.name, d.company, d.stage, d.owner].join(" ").toLowerCase().includes(q)
+    );
+
+    if (App._dealsView === "board") {
+      App._renderDealsBoard(items);
+    } else {
+      App._renderDealsList(items);
+    }
+  },
+
+  _renderDealsBoard(items) {
+    const board = $("deals-board");
+    board.innerHTML = App.DEAL_STAGES.map(st => {
+      const cards = items.filter(d => (d.stage || "new deals") === st.key);
+      const total = cards.reduce((s, d) => s + (Number(d.value) || 0), 0);
+      return `
+        <div class="board-col">
+          <div class="board-col-header">
+            <span class="board-col-title" style="color:${st.color};">${st.label}</span>
+            <span class="board-col-count">${cards.length} · ${fmt$(total)}</span>
+          </div>
+          <div class="board-col-body">
+            ${cards.length ? cards.map(d => `
+              <div class="board-card" onclick="App.showDetail('deal','${d.id}')">
+                <div class="board-card-title">${sanitize(d.name||"Untitled")}</div>
+                <div class="board-card-company">${sanitize(d.company||"")}</div>
+                <div class="board-card-footer">
+                  <span class="board-card-value">${fmt$(d.value)}</span>
+                  <span class="board-card-date">${d.close_date ? fmtDate(d.close_date) : ""}</span>
+                </div>
+              </div>`).join("") :
+              `<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">Empty</div>`
+            }
+          </div>
+        </div>`;
+    }).join("");
+  },
+
+  _renderDealsList(items) {
+    const stageBadge = s => {
+      const m = { "new deals":"gray", prospect:"blue", proposal:"amber", negotiation:"purple", won:"green", lost:"red" };
+      return `<span class="badge badge-${m[s]||"gray"}">${sanitize(s)}</span>`;
+    };
+    const tbody = $("deals-list-tbody");
+    if (!items.length) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">🤝</div><div class="empty-state-title">No deals</div></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = items.map(d => `
+      <tr onclick="App.showDetail('deal','${d.id}')">
+        <td><strong>${sanitize(d.name||"Untitled")}</strong></td>
+        <td>${sanitize(d.company||"—")}</td>
+        <td>${stageBadge(d.stage||"new deals")}</td>
+        <td style="color:var(--green);font-weight:700;">${fmt$(d.value)}</td>
+        <td class="td-muted">${d.close_date ? fmtDate(d.close_date) : "—"}</td>
+        <td class="td-muted">${sanitize(d.owner||"—")}</td>
+      </tr>`).join("");
+  },
+
+  setDealsView(view) {
+    App._dealsView = view;
+    // Toggle buttons
+    $("deals-board-btn").classList.toggle("active", view === "board");
+    $("deals-list-btn").classList.toggle("active", view === "list");
+    // Toggle panels
+    const boardView = $("deals-board-view");
+    const listView  = $("deals-list-view");
+    if (view === "board") {
+      boardView.classList.remove("hidden");
+      boardView.style.display = "block";
+      listView.classList.remove("active");
+      listView.style.display = "none";
+    } else {
+      boardView.classList.add("hidden");
+      boardView.style.display = "none";
+      listView.classList.add("active");
+      listView.style.display = "block";
+    }
+    App.renderDeals();
+  },
+
+  /* ----------------------------------------------------------
+     QUOTES
+  ---------------------------------------------------------- */
+  renderQuotes() {
+    const q     = App._searchQuery;
+    let items   = Store.read("quotes");
+    if (q) items = items.filter(qt =>
+      [qt.number, qt.customer, qt.status].join(" ").toLowerCase().includes(q)
+    );
+    const tbody = $("quotes-tbody");
+    if (!items.length) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">📄</div><div class="empty-state-title">No quotes</div></div></td></tr>`;
+      return;
+    }
+    const statusBadge = s => {
+      const m = { draft:"gray", sent:"blue", accepted:"green", declined:"red" };
+      return `<span class="badge badge-${m[s]||"gray"}">${sanitize(s)}</span>`;
+    };
+    tbody.innerHTML = items.map(q => `
+      <tr onclick="App.showDetail('quote','${q.id}')">
+        <td><strong>${sanitize(q.number||"—")}</strong></td>
+        <td>${sanitize(q.customer||"—")}</td>
+        <td style="color:var(--green);font-weight:700;">${fmt$(q.amount)}</td>
+        <td>${statusBadge(q.status||"draft")}</td>
+        <td class="td-muted">${fmtDate(q.created_at)}</td>
+      </tr>`).join("");
+  },
+
+  /* ----------------------------------------------------------
+     TASKS
+  ---------------------------------------------------------- */
+  renderTasks() {
+    const q     = App._searchQuery;
+    let items   = Store.read("tasks");
+    if (q) items = items.filter(t =>
+      [t.title, t.related, t.priority, t.status].join(" ").toLowerCase().includes(q)
+    );
+    const tbody = $("tasks-tbody");
+    if (!items.length) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-title">No tasks</div></div></td></tr>`;
+      return;
+    }
+    const priBadge = p => {
+      const m = { low:"gray", medium:"amber", high:"red" };
+      return `<span class="badge badge-${m[p]||"gray"}">${sanitize(p)}</span>`;
+    };
+    const stBadge = s => {
+      const m = { pending:"amber", "in progress":"blue", completed:"green" };
+      return `<span class="badge badge-${m[s]||"gray"}">${sanitize(s)}</span>`;
+    };
+    tbody.innerHTML = items.map(t => `
+      <tr onclick="App.showDetail('task','${t.id}')">
+        <td><strong>${sanitize(t.title||"")}</strong></td>
+        <td class="td-muted">${sanitize(t.related||"—")}</td>
+        <td class="td-muted">${t.due_date ? fmtDate(t.due_date) : "—"}</td>
+        <td>${priBadge(t.priority||"low")}</td>
+        <td>${stBadge(t.status||"pending")}</td>
+      </tr>`).join("");
+  },
+
+  /* ----------------------------------------------------------
+     ACTIVITY
+  ---------------------------------------------------------- */
+  renderActivity() {
+    const q     = App._searchQuery;
+    let items   = [...Store.read("activities")].reverse();
+    if (q) items = items.filter(a =>
+      [a.title, a.meta, a.note].join(" ").toLowerCase().includes(q)
+    );
+    const list = $("activity-list");
+    list.innerHTML = items.length
+      ? items.map(a => App._activityRow(a)).join("")
+      : `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">No activity yet</div></div>`;
+  },
+
+  /* ----------------------------------------------------------
+     SETTINGS
+  ---------------------------------------------------------- */
+  renderSettings() {
+    const list = $("users-list");
+    list.innerHTML = Object.entries(ACCESS_LIST).map(([key, user]) => `
+      <div class="user-row">
+        <div class="user-row-avatar">${sanitize((user.display||key).charAt(0).toUpperCase())}</div>
+        <div class="user-row-info">
+          <div class="user-row-name">${sanitize(user.display || key)}</div>
+          <div class="user-row-role">Username: ${sanitize(key)}</div>
+        </div>
+        <div class="user-row-actions">
+          ${key !== currentUser?.username ? `<button class="btn btn-sm btn-danger" onclick="App.deleteUser('${key}')">Remove</button>` : `<span class="badge badge-green">You</span>`}
+        </div>
+      </div>`).join("");
+  },
+
+  /* ----------------------------------------------------------
+     MODAL HELPERS
+  ---------------------------------------------------------- */
+  openModal(name) {
+    const el = $(`modal-${name}`);
+    if (el) el.classList.add("open");
+  },
+
+  closeModal(name) {
+    const el = $(`modal-${name}`);
+    if (el) el.classList.remove("open");
+  },
+
+  /* ----------------------------------------------------------
+     SAVE METHODS
+  ---------------------------------------------------------- */
+  async saveLead() {
+    const fname = $("lead-fname").value.trim();
+    const lname = $("lead-lname").value.trim();
+    if (!fname) { toast("First name is required.", "error"); return; }
+    const record = {
+      id: uid(), first_name: fname, last_name: lname,
+      company: $("lead-company").value.trim(),
+      email:   $("lead-email").value.trim(),
+      phone:   $("lead-phone").value.trim(),
+      source:  $("lead-source").value,
+      notes:   $("lead-notes").value.trim()
+    };
+    await Store.save("leads", record);
+    App.logActivity({ type:"note", title:`New lead: ${fname} ${lname}`, meta: record.company });
+    App.closeModal("add-lead");
+    toast("Lead saved.", "success");
+    App.updateBadges();
+    App.renderCurrentSection();
+    // Clear form
+    ["lead-fname","lead-lname","lead-company","lead-email","lead-phone","lead-notes"].forEach(id => $(id).value = "");
+  },
+
+  async saveContact() {
+    const fname = $("contact-fname").value.trim();
+    if (!fname) { toast("First name is required.", "error"); return; }
+    const record = {
+      id: uid(), first_name: fname, last_name: $("contact-lname").value.trim(),
+      company: $("contact-company").value.trim(),
+      email:   $("contact-email").value.trim(),
+      phone:   $("contact-phone").value.trim(),
+      title:   $("contact-title").value.trim(),
+      status:  $("contact-status").value
+    };
+    await Store.save("contacts", record);
+    App.logActivity({ type:"note", title:`Contact added: ${fname} ${record.last_name}`, meta: record.company });
+    App.closeModal("add-contact");
+    toast("Contact saved.", "success");
+    App.renderCurrentSection();
+    ["contact-fname","contact-lname","contact-company","contact-email","contact-phone","contact-title"].forEach(id => $(id).value = "");
+  },
+
+  async saveCompany() {
+    const name = $("co-name").value.trim();
+    if (!name) { toast("Company name is required.", "error"); return; }
+    const record = {
+      id: uid(), name, industry: $("co-industry").value.trim(),
+      city:      $("co-city").value.trim(),
+      revenue:   $("co-revenue").value.trim(),
+      employees: $("co-employees").value,
+      website:   $("co-website").value.trim()
+    };
+    await Store.save("companies", record);
+    App.logActivity({ type:"note", title:`Company added: ${name}`, meta: record.industry });
+    App.closeModal("add-company");
+    toast("Company saved.", "success");
+    App.renderCurrentSection();
+    ["co-name","co-industry","co-city","co-revenue","co-employees","co-website"].forEach(id => $(id).value = "");
+  },
+
+  async saveDeal() {
+    const name = $("deal-name").value.trim();
+    if (!name) { toast("Deal name is required.", "error"); return; }
+    const record = {
+      id: uid(), name,
+      company:    $("deal-company").value.trim(),
+      value:      Number($("deal-value").value) || 0,
+      stage:      $("deal-stage").value,
+      close_date: $("deal-close").value,
+      owner:      $("deal-owner").value.trim(),
+      notes:      $("deal-notes").value.trim()
+    };
+    await Store.save("deals", record);
+    App.logActivity({ type:"quote", title:`Deal created: ${name}`, meta: `${record.company} · ${fmt$(record.value)}` });
+    App.closeModal("add-deal");
+    toast("Deal saved.", "success");
+    App.updateBadges();
+    App.renderCurrentSection();
+    ["deal-name","deal-company","deal-value","deal-close","deal-owner","deal-notes"].forEach(id => $(id).value = "");
+  },
+
+  async saveQuote() {
+    const num = $("quote-number").value.trim();
+    if (!num) { toast("Quote number is required.", "error"); return; }
+    const record = {
+      id: uid(), number: num,
+      customer:    $("quote-customer").value.trim(),
+      amount:      Number($("quote-amount").value) || 0,
+      status:      $("quote-status").value,
+      description: $("quote-desc").value.trim()
+    };
+    await Store.save("quotes", record);
+    App.logActivity({ type:"quote", title:`Quote sent: ${num}`, meta: `${record.customer} · ${fmt$(record.amount)}` });
+    App.closeModal("add-quote");
+    toast("Quote saved.", "success");
+    App.renderCurrentSection();
+    ["quote-number","quote-customer","quote-amount","quote-desc"].forEach(id => $(id).value = "");
+  },
+
+  async saveTask() {
+    const title = $("task-title").value.trim();
+    if (!title) { toast("Task title is required.", "error"); return; }
+    const record = {
+      id: uid(), title,
+      related:  $("task-related").value.trim(),
+      due_date: $("task-due").value,
+      priority: $("task-priority").value,
+      status:   $("task-status").value
+    };
+    await Store.save("tasks", record);
+    App.logActivity({ type:"task", title:`Task created: ${title}`, meta: record.related });
+    App.closeModal("add-task");
+    toast("Task saved.", "success");
+    App.renderCurrentSection();
+    ["task-title","task-related","task-due"].forEach(id => $(id).value = "");
+  },
+
+  saveUser() {
+    const username = $("new-user-username").value.trim().toLowerCase();
+    const password = $("new-user-password").value;
+    const display  = $("new-user-display").value.trim() || username;
+    if (!username || !password) { toast("Username and password are required.", "error"); return; }
+    if (ACCESS_LIST[username]) { toast("Username already exists.", "error"); return; }
+    ACCESS_LIST[username] = { password, display };
+    App.closeModal("add-user");
+    toast(`User "${display}" added.`, "success");
+    App.renderSettings();
+    ["new-user-username","new-user-password","new-user-display"].forEach(id => $(id).value = "");
+  },
+
+  deleteUser(key) {
+    if (!ACCESS_LIST[key]) return;
+    const name = ACCESS_LIST[key].display || key;
+    delete ACCESS_LIST[key];
+    toast(`User "${name}" removed.`, "info");
+    App.renderSettings();
+  },
+
+  /* ----------------------------------------------------------
+     ACTIVITY LOGGING
+  ---------------------------------------------------------- */
+  async logActivity(entry) {
+    const record = { id: uid(), ...entry, created_at: new Date().toISOString() };
+    await Store.save("activities", record);
+  },
+
+  /* ----------------------------------------------------------
+     DETAIL MODAL
+  ---------------------------------------------------------- */
+  showDetail(type, id) {
+    const collections = {
+      lead:"leads", contact:"contacts", company:"companies",
+      deal:"deals", quote:"quotes", task:"tasks"
+    };
+    const coll = collections[type];
+    if (!coll) return;
+    const item = Store.read(coll).find(r => r.id === id);
+    if (!item) return;
+
+    $("detail-modal-title").textContent = item.name || `${item.first_name||""} ${item.last_name||""}`.trim() || item.title || item.number || "Details";
+
+    const rows = Object.entries(item)
+      .filter(([k]) => !["id","tenant_id","owner_id"].includes(k))
+      .map(([k, v]) => `
+        <div class="detail-field">
+          <div class="detail-field-label">${sanitize(k.replace(/_/g," "))}</div>
+          <div class="detail-field-value">${sanitize(String(v||"—"))}</div>
+        </div>`).join("");
+
+    $("detail-modal-body").innerHTML = `<div class="detail-grid">${rows}</div>`;
+    App.openModal("detail");
+  },
+
+  /* ----------------------------------------------------------
+     LOGOUT
+  ---------------------------------------------------------- */
+  logout() {
+    clearSession();
+    $("app").classList.remove("visible");
+    $("login-page").style.display = "flex";
+    $("login-username").value = "";
+    $("login-password").value = "";
+    $("login-error").classList.remove("show");
+  }
+};
+
+/* ============================================================
+   AUTH
+============================================================ */
+function handleLogin() {
+  const username = $("login-username").value.trim().toLowerCase();
+  const password = $("login-password").value;
+  const errEl    = $("login-error");
+
+  const user = ACCESS_LIST[username];
+  if (!user || user.password !== password) {
+    errEl.classList.add("show");
+    $("login-password").value = "";
+    return;
+  }
+
+  errEl.classList.remove("show");
+  setSession({ username, display: user.display || username });
+
+  // Update sidebar user display
+  const display = user.display || username;
+  $("sidebar-username-display").textContent = display;
+  $("sidebar-avatar").textContent = display.charAt(0).toUpperCase();
+
+  // Show app
+  $("login-page").style.display = "none";
+  $("app").classList.add("visible");
+
+  // Boot asynchronously
+  App.boot();
+}
+
+// Login button click
+$("login-btn").addEventListener("click", handleLogin);
+
+// Enter key on login fields
+["login-username","login-password"].forEach(id => {
+  $(id).addEventListener("keydown", e => { if (e.key === "Enter") handleLogin(); });
+});
+
+// Close modals on overlay click
+document.querySelectorAll(".modal-overlay").forEach(overlay => {
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) {
+      const id = overlay.id.replace("modal-","");
+      App.closeModal(id);
+    }
+  });
+});
+</script>
+</body>
+</html>
