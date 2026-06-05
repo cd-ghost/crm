@@ -422,7 +422,8 @@
     .mobile-nav-backdrop.open { display: block; }
 
     @media (max-width: 768px) {
-      /* App shell */
+      .mobile-nav:not(.hidden) { display: flex; }
+      .mobile-nav.hidden { display: none; }
       #app.visible { flex-direction: column; }
       .main-wrap { height: 100vh; }
 
@@ -914,7 +915,7 @@
               <table id="companies-table">
                 <thead>
                   <tr>
-                    <th>Company</th><th>Industry</th><th>City</th><th>Contacts</th><th>Revenue</th>
+                    <th>Company</th><th>Industry</th><th>City</th><th>Employees</th><th>Revenue</th><th>Actions</th>
                   </tr>
                 </thead>
                 <tbody id="companies-tbody"></tbody>
@@ -1158,13 +1159,13 @@
         </div>
         <div class="form-group">
           <label class="form-label">City</label>
-          <input class="form-control" id="co-city" placeholder="New York" />
+          <input class="form-control" id="co-city" placeholder="Mumbai" />
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Annual Revenue</label>
-          <input class="form-control" id="co-revenue" placeholder="$5M" />
+          <input class="form-control" id="co-revenue" placeholder="₹5 Cr" />
         </div>
         <div class="form-group">
           <label class="form-label">Employees</label>
@@ -1179,6 +1180,51 @@
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="App.closeModal('add-company')">Cancel</button>
       <button class="btn btn-primary" onclick="App.saveCompany()">Save Company</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Company -->
+<div class="modal-overlay" id="modal-edit-company">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Company</span>
+      <button class="modal-close" onclick="App.closeModal('edit-company')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-co-id" />
+      <div class="form-group">
+        <label class="form-label">Company Name</label>
+        <input class="form-control" id="edit-co-name" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Industry</label>
+          <input class="form-control" id="edit-co-industry" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input class="form-control" id="edit-co-city" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Annual Revenue</label>
+          <input class="form-control" id="edit-co-revenue" placeholder="₹5 Cr" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Employees</label>
+          <input class="form-control" id="edit-co-employees" type="number" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Website</label>
+        <input class="form-control" id="edit-co-website" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('edit-company')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.saveEditCompany()">Update Company</button>
     </div>
   </div>
 </div>
@@ -1580,6 +1626,12 @@
           <input class="form-control" id="task-due" type="date" />
         </div>
         <div class="form-group">
+          <label class="form-label">Time</label>
+          <input class="form-control" id="task-time" type="time" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
           <label class="form-label">Priority</label>
           <select class="form-control" id="task-priority">
             <option value="low">Low</option>
@@ -1599,7 +1651,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="App.closeModal('add-task')">Cancel</button>
-      <button class="btn btn-primary" onclick="App.saveTask()">Save Task</button>
+      <button class="btn btn-primary" onclick="App.saveTask()">💾 Save Task</button>
     </div>
   </div>
 </div>
@@ -1684,12 +1736,12 @@ const Store = (() => {
   ===================================================== */
   const _mem = {
     companies: [
-      { id:"co1", name:"Skyline Convention Centre", industry:"Events & Hospitality", city:"Mumbai", revenue:"$8.5M", employees:120, website:"skylinecc.in" },
-      { id:"co2", name:"Pinnacle Hotels Group",     industry:"Hospitality",          city:"Delhi",  revenue:"$22M",  employees:450, website:"pinnaclehotels.com" },
-      { id:"co3", name:"TechPark Offices Ltd",      industry:"Commercial Real Estate",city:"Pune",   revenue:"$5M",   employees:80,  website:"techparkindia.com" },
-      { id:"co4", name:"BlueStar Education Trust",  industry:"Education",            city:"Bangalore",revenue:"$3M",  employees:200, website:"bluestaredu.org" },
-      { id:"co5", name:"Meridian Broadcasting",     industry:"Media & Broadcasting", city:"Mumbai", revenue:"$15M",  employees:310, website:"meridianbc.tv" },
-      { id:"co6", name:"Nexus Retail Pvt Ltd",      industry:"Retail",               city:"Chennai",revenue:"$12M",  employees:560, website:"nexusretail.in" }
+      { id:"co1", name:"Skyline Convention Centre", industry:"Events & Hospitality", city:"Mumbai",    revenue:"₹7 Cr",  employees:120, website:"skylinecc.in" },
+      { id:"co2", name:"Pinnacle Hotels Group",     industry:"Hospitality",          city:"New Delhi",  revenue:"₹18 Cr", employees:450, website:"pinnaclehotels.com" },
+      { id:"co3", name:"TechPark Offices Ltd",      industry:"Commercial Real Estate",city:"Pune",       revenue:"₹4 Cr",  employees:80,  website:"techparkindia.com" },
+      { id:"co4", name:"BlueStar Education Trust",  industry:"Education",            city:"Bengaluru",  revenue:"₹2.5 Cr",employees:200, website:"bluestaredu.org" },
+      { id:"co5", name:"Meridian Broadcasting",     industry:"Media & Broadcasting", city:"Mumbai",     revenue:"₹12 Cr", employees:310, website:"meridianbc.tv" },
+      { id:"co6", name:"Nexus Retail Pvt Ltd",      industry:"Retail",               city:"Chennai",    revenue:"₹10 Cr", employees:560, website:"nexusretail.in" }
     ],
     contacts: [
       { id:"ct1", first_name:"Arjun",   last_name:"Mehta",     company:"Skyline Convention Centre", email:"arjun.mehta@skylinecc.in",    phone:"+91 98201 11234", title:"AV Director",        status:"active" },
@@ -1798,8 +1850,8 @@ const Store = (() => {
    UTILITIES
 ============================================================ */
 const $ = id => document.getElementById(id);
-const fmt$ = n => new Intl.NumberFormat("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 }).format(n || 0);
-const fmtDate = d => d ? new Date(d).toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" }) : "—";
+const fmt$ = n => new Intl.NumberFormat("en-IN", { style:"currency", currency:"INR", maximumFractionDigits:0 }).format(n || 0);
+const fmtDate = d => d ? new Date(d).toLocaleDateString("en-IN", { month:"short", day:"numeric", year:"numeric" }) : "—";
 const uid = () => Math.random().toString(36).slice(2, 10);
 
 function toast(msg, type = "success") {
@@ -2249,16 +2301,22 @@ const App = {
     );
     const tbody = $("companies-tbody");
     if (!items.length) {
-      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">🏢</div><div class="empty-state-title">No companies</div></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">🏢</div><div class="empty-state-title">No companies</div></div></td></tr>`;
       return;
     }
     tbody.innerHTML = items.map(c => `
-      <tr onclick="App.showDetail('company', '${c.id}')">
-        <td><strong>${sanitize(c.name||"")}</strong>${c.website ? `<span class="td-sub">${sanitize(c.website)}</span>` : ""}</td>
-        <td>${sanitize(c.industry||"—")}</td>
-        <td class="td-muted">${sanitize(c.city||"—")}</td>
-        <td class="td-muted">${c.employees ? sanitize(c.employees) : "—"}</td>
-        <td>${c.revenue ? sanitize(c.revenue) : "—"}</td>
+      <tr>
+        <td onclick="App.showDetail('company', '${c.id}')" style="cursor:pointer;"><strong>${sanitize(c.name||"")}</strong>${c.website ? `<span class="td-sub">${sanitize(c.website)}</span>` : ""}</td>
+        <td onclick="App.showDetail('company', '${c.id}')" style="cursor:pointer;">${sanitize(c.industry||"—")}</td>
+        <td class="td-muted" onclick="App.showDetail('company', '${c.id}')" style="cursor:pointer;">${sanitize(c.city||"—")}</td>
+        <td class="td-muted" onclick="App.showDetail('company', '${c.id}')" style="cursor:pointer;">${c.employees ? sanitize(String(c.employees)) : "—"}</td>
+        <td onclick="App.showDetail('company', '${c.id}')" style="cursor:pointer;">${c.revenue ? sanitize(c.revenue) : "—"}</td>
+        <td>
+          <div class="row-actions">
+            <button class="mini-btn" title="Edit" onclick="App.editCompany('${c.id}')">✏️</button>
+            <button class="mini-btn danger" title="Delete" onclick="App.deleteCompany('${c.id}')">🗑️</button>
+          </div>
+        </td>
       </tr>`).join("");
   },
 
@@ -2638,6 +2696,7 @@ const App = {
         </div>
         ${priBadge(t.priority||"low")}
         <span class="badge badge-${isOverdue?"red":"gray"}" style="font-size:10.5px;">${t.status==="completed"?"✅ Done":isOverdue?"⚠️ Overdue":"📅 Due"}</span>
+        <button class="mini-btn" title="Add to Google Calendar" onclick="App.openGoogleCalendarForTask('${t.id}')">📅</button>
         <button class="mini-btn" title="Edit" onclick="App.editTask('${t.id}')">✏️</button>
         <button class="mini-btn danger" onclick="App.deleteTask('${t.id}')">🗑️</button>
       </div>`;
@@ -2688,6 +2747,7 @@ const App = {
           </div>
           ${priBadge(t.priority||"low")}
           <span class="badge badge-${g.key==="overdue"?"red":"gray"}" style="font-size:10.5px;">📅 ${t.due_date ? fmtDate(t.due_date) : "—"}</span>
+          <button class="mini-btn" title="Add to Google Calendar" onclick="App.openGoogleCalendarForTask('${t.id}')">📅</button>
           <button class="mini-btn" title="Edit" onclick="App.editTask('${t.id}')">✏️</button>
           <button class="mini-btn danger" onclick="App.deleteTask('${t.id}')">🗑️</button>
         </div>`).join("");
@@ -2967,6 +3027,41 @@ const App = {
     ["co-name","co-industry","co-city","co-revenue","co-employees","co-website"].forEach(id => $(id).value = "");
   },
 
+  editCompany(id) {
+    const companies = Store.read("companies");
+    const c = companies.find(x => x.id === id);
+    if (!c) return;
+    $("edit-co-id").value       = c.id;
+    $("edit-co-name").value     = c.name      || "";
+    $("edit-co-industry").value = c.industry  || "";
+    $("edit-co-city").value     = c.city      || "";
+    $("edit-co-revenue").value  = c.revenue   || "";
+    $("edit-co-employees").value= c.employees || "";
+    $("edit-co-website").value  = c.website   || "";
+    App.openModal("edit-company");
+  },
+
+  async saveEditCompany() {
+    const id   = $("edit-co-id").value;
+    const name = $("edit-co-name").value.trim();
+    if (!name) { toast("Company name is required.", "error"); return; }
+    const changes = { name, industry: $("edit-co-industry").value.trim(), city: $("edit-co-city").value.trim(), revenue: $("edit-co-revenue").value.trim(), employees: $("edit-co-employees").value, website: $("edit-co-website").value.trim() };
+    await Store.update("companies", id, changes);
+    App.logActivity({ type:"note", title:`Company updated: ${name}`, meta: changes.industry });
+    App.closeModal("edit-company");
+    toast("Company updated.", "success");
+    App.renderCurrentSection();
+  },
+
+  deleteCompany(id) {
+    const arr  = Store.read("companies");
+    const item = arr.find(x => x.id === id);
+    if (!confirm(`Delete "${item ? item.name : "this company"}"? This cannot be undone.`)) return;
+    Store.remove("companies", id);
+    if (item) toast(`"${item.name}" deleted.`, "info");
+    App.renderCurrentSection();
+  },
+
   async saveDeal() {
     const name = $("deal-name").value.trim();
     if (!name) { toast("Deal name is required.", "error"); return; }
@@ -3077,19 +3172,71 @@ const App = {
     const title = $("task-title").value.trim();
     if (!title) { toast("Task title is required.", "error"); return; }
     const statusVal = $("task-status").value;
+    const dateStr = $("task-due").value;
+    const timeStr = $("task-time").value;
     const record = {
       id: uid(), title,
       related:  $("task-related").value.trim(),
-      due_date: $("task-due").value,
+      due_date: dateStr,
+      due_time: timeStr,
       priority: $("task-priority").value,
       status:   statusVal === "completed" ? "completed" : (statusVal === "in progress" ? "in progress" : "pending")
     };
     await Store.save("tasks", record);
     App.logActivity({ type:"task", title:`Task created: ${title}`, meta: record.related });
     App.closeModal("add-task");
-    toast("Task saved.", "success");
+    toast("Task saved. Opening Google Calendar…", "success");
     App.renderCurrentSection();
-    ["task-title","task-related","task-due"].forEach(id => $(id).value = "");
+    ["task-title","task-related","task-due","task-time"].forEach(id => $(id).value = "");
+    // Open Google Calendar with event details
+    App._openGoogleCalendarUrl(title, dateStr, timeStr);
+  },
+
+  /* ----------------------------------------------------------
+     GOOGLE CALENDAR INTEGRATION
+  ---------------------------------------------------------- */
+  openGoogleCalendarFromModal() {
+    const title = $("task-title").value.trim();
+    if (!title) { toast("Please enter a task title first.", "error"); return; }
+    const dateStr = $("task-due").value;   // YYYY-MM-DD
+    const timeStr = $("task-time").value;  // HH:MM (24h)
+    App._openGoogleCalendarUrl(title, dateStr, timeStr);
+    // Also save the task in CRM
+    App.saveTask();
+  },
+
+  _openGoogleCalendarUrl(title, dateStr, timeStr) {
+    // Build GCal URL without OAuth — uses the "r" (quick-add via URL params) endpoint
+    let dates = "";
+    if (dateStr) {
+      const d = dateStr.replace(/-/g, "");  // YYYYMMDD
+      if (timeStr) {
+        const [hh, mm] = timeStr.split(":");
+        const start = `${d}T${hh}${mm}00`;
+        const endHour = String(Number(hh) + 1).padStart(2, "0");
+        const end   = `${d}T${endHour}${mm}00`;
+        dates = `${start}/${end}`;
+      } else {
+        dates = `${d}/${d}`;
+      }
+    }
+    // Tab 1: Google Calendar EVENT
+    const eventParams = new URLSearchParams({ action: "TEMPLATE", text: title });
+    if (dates) eventParams.set("dates", dates);
+    window.open(`https://calendar.google.com/calendar/render?${eventParams.toString()}`, "_blank");
+
+    // Tab 2: Google Tasks (via Google Calendar Tasks panel deep-link)
+    const taskParams = new URLSearchParams({ action: "TEMPLATE", text: title, type: "task" });
+    if (dateStr) taskParams.set("due", dateStr);
+    window.open(`https://calendar.google.com/calendar/r/tasks?${taskParams.toString()}`, "_blank");
+  },
+
+  openGoogleCalendarForTask(id) {
+    const tasks = Store.read("tasks");
+    const t = tasks.find(x => x.id === id);
+    if (!t) return;
+    App._openGoogleCalendarUrl(t.title, t.due_date, t.due_time || "");
+    toast("Opening Google Calendar…", "info");
   },
 
   saveUser() {
@@ -3158,7 +3305,7 @@ const App = {
     $("login-username").value = "";
     $("login-password").value = "";
     $("login-error").classList.remove("show");
-    var mn = document.getElementById("mobile-nav"); if (mn) mn.style.display = "none";
+    var mn = document.getElementById("mobile-nav"); if (mn) { mn.classList.add("hidden"); mn.style.display = "none"; }
   }
 };
 
@@ -3188,7 +3335,8 @@ function handleLogin() {
   // Show app
   $("login-page").style.display = "none";
   $("app").classList.add("visible");
-  var mn = document.getElementById("mobile-nav"); if (mn) mn.style.display = "flex";
+  var mn = document.getElementById("mobile-nav");
+  if (mn && window.innerWidth <= 768) { mn.classList.remove("hidden"); mn.style.display = "flex"; }
 
   // Boot asynchronously
   App.boot();
@@ -3221,7 +3369,7 @@ document.addEventListener("click", () => {
 <!-- ============================================================
      MOBILE BOTTOM NAV
 ============================================================ -->
-<div class="mobile-nav" id="mobile-nav">
+<div class="mobile-nav hidden" id="mobile-nav">
   <button class="mobile-nav-item active" data-section="dashboard" onclick="MobileNav.go('dashboard')">
     <span class="mn-icon">🏠</span>Dashboard
   </button>
